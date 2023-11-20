@@ -1,0 +1,9 @@
+.row {
+    display: table-row; 
+  }
+  .col {
+    display: table-cell; 
+    padding: 1em;
+    border: 2px solid blue;
+    
+  }
