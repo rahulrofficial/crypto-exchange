@@ -3,10 +3,47 @@
 
 
 {%block body%}
+<h1>{{coin.name}} Price <span style="font-size: 20px;color: grey;">{{coin.symbol}}</span>  </h1>
+<div style="display: flex;flex-wrap: wrap;" class="d-flex">
+    <div class="p-2 col-md-8  bg-info"><img src="https://img.freepik.com/free-photo/abstract-grunge-decorative-relief-navy-blue-stucco-wall-texture-wide-angle-rough-colored-background_1258-28311.jpg" alt=""></div>
+    <div  class="p-2 col-md-4 ">
+      <table class="table">
+        <tr>
+          <td>Supply</td>
+          <td>{{coin.supply|floatformat:0}}</td>
+        </tr>
+<tr>
+  <td>Max Supply</td>
+  <td>{{coin.maxSupply|floatformat:0}}</td>
+</tr>
+      
+<tr>
+  <td>Market Cap</td>
+  <td>{{coin.marketCapUsd|floatformat:4}}</td>
+</tr>
+<tr>
+  <td>Volume Used 24Hr</td>
+  <td>{{coin.volumeUsd24Hr|floatformat:4}}</td>
+</tr>
 
-<div class="d-flex">
-    <div class="p-2 bg-info flex-fill"><img  style="max-width:1000px;max-height:500px;" src="https://cdn.pixabay.com/photo/2023/09/27/07/29/mantis-8278996_1280.jpg" alt="Girl in a jacket" ></div>
-    <div class="p-2 bg-warning flex-fill"></div>
+<tr>
+  <td>Price</td>
+  <td>${{coin.priceUsd|floatformat:4}}</td>
+</tr>
+
+<tr>
+  <td>Change Percent 24Hr</td>
+  <td>{{coin.changePercent24Hr|floatformat:4}}</td>
+</tr>
+
+
+
+
+</table>
+     
+    
+
+    </div>
    
   </div>
 

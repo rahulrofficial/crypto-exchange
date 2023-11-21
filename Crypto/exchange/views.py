@@ -6,16 +6,33 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from .models import User
+import requests
+import json 
+
 
 # Create your views here.
-
+#https://cryptocurrencyliveprices.com/img/eth-ethereum.png
 def index(request):
+    url = 'https://api.coincap.io/v2/assets?limit=5'
     
-    return render(request,'index.html')
+    res = requests.get(url)
+    response = json.loads(res.text)
+    return render(request,'index.html',{'coins':response['data']})
 
-def view_coin(request):
+def view_coin(request,id):
+    url=f'http://api.coincap.io/v2/assets/{id}'
+    res = requests.get(url)
+    response = json.loads(res.text)
+    return render(request,'view_coin.html',{'coin':response['data']})
+
+def markets(request):
+    url = 'https://api.coincap.io/v2/assets'
     
-    return render(request,'view_coin.html')
+    res = requests.get(url)
+    response = json.loads(res.text)
+    
+    return render(request,'markets.html',{'coins':response['data']})
+
 
 
 def login_view(request):
@@ -31,7 +48,7 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
-            return render(request, "auctions/login.html", {
+            return render(request, "login.html", {
                 "message": "Invalid username and/or password."
             })
     else:

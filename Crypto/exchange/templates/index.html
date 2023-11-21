@@ -4,7 +4,20 @@
 
 {%block body%}
 
-<h>Checking index</h>
+<div style="display: flex;flex-wrap: wrap;" class="d-flex float-end">
+    <div class="p-2  flex-fill"><img src="https://img.freepik.com/free-photo/abstract-grunge-decorative-relief-navy-blue-stucco-wall-texture-wide-angle-rough-colored-background_1258-28311.jpg" alt=""></div>
+    <div class="p-2  flex-fill ">
+        {%for item in coins%}
+    <div class="front_market" id="front_market_div_{{item.id}}">
+     <a href="{%url 'view_coin' item.id %}"><h6>{{item.name}} ({{item.symbol}})</h6></a>   
+    <p>Price: {{item.priceUsd|floatformat:4}}</p>
+    </div>
 
-<a href="{%url 'view_coin'%}">view coin</a>
+        {%endfor%}
+     <a class="m-3" href="{%url 'markets'%}"><span style="color: grey;">View All 100+ coins</span></a>
+   
+  </div>
+
+
+
 {%endblock%}
