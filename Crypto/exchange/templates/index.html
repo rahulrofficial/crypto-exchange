@@ -1,23 +1,96 @@
-{% extends "layout.html" %}
-{% load static %}
+{% extends "layout.html" %}  {%block body%}
 
+<div  class="container">
+	<div class="row">
+		<div style="width:750px;height:500px;" class="col-6 mb-5"> 
+			<div id="carouselExampleInterval" class=" carousel slide carousel-fade me-2" data-bs-ride="carousel">
+				<div class="carousel-inner" ">
+				  <div class="carousel-item active" data-bs-interval="3000">
+					<div class="card" style="width:700px;height:500px;">
+						<div class="card-body" style="text-align: center; padding:70px 0;">
+						  <h1 style="font-size:100px;">World's </h1>
+						  <h1 style="font-size:70px;">Crypto </h1>
+						  <h1 style="font-size:80px;font-weight:bolder;color:blue">Extraordinaire</h1>
+						</div>
+					  </div>
+				  </div>
+				  <div class="carousel-item" data-bs-interval="3000">
+					 
+					<div class="card" style="width:700px;height:500px;">
+						<div class="card-body"style="text-align: center;padding:70px 0;">
+						  
+						  <h1 style="font-size:70px;color:blue">Fund Your Account and </h1>
+						  <h1 style="font-size:80px;font-weight:bolder;">Start Trading</h1>
+						</div>
+					  </div>
+					
+				  </div>
+				  <div class="carousel-item" data-bs-interval="3000">
+					<div class="card" style="width:700px;height:500px;">
+						<div class="card-body" style="text-align: center;">
+						  <h1 style="font-size:100px;color:blue">Seamless</h1>
+						  <h1 style="font-size:100px;">Fast</h1>
+						  <h1 style="font-size:100px;font-weight:bolder;color:blue">Efficient</h1>
+						</div>
+					  </div>
+				  </div>
+				  <div class="carousel-item" data-bs-interval="3000">
+					<div class="card" style="width:700px;height:500px;">
+						<div class="card-body" style="text-align: center;padding:70px 0;">
+						  <h1 style="font-size:60px;">The</h1>
+						  <h1 style="font-size:100px;font-weight:bolder;color:blue">Crypto</h1>
+						  <h1 style="font-size:100px;font-weight:bolder;color:blue">Hub</h1>
+						</div>
+					  </div>
+				  </div>
+				</div>
+				<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+				  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				  <span class="visually-hidden">Previous</span>
+				</button>
+				<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+				  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+				  <span class="visually-hidden">Next</span>
+				</button>
+			  </div>
+			
+		</div> 
+		<div style="width:500px;height:800px;" class="col-6 ">
+			{%for item in coins%}
 
-{%block body%}
+			<div style="width: 500px" class="container">
+				<div class="row">
+					<div class="col-2"><a href="{%url 'view_coin' item.id %}">
+						<img
+							src="https://cryptologos.cc/logos/{{item.id}}-{{item.symbol|lower}}-logo.png"
+							width="40px"
+							alt="" />
+					</a>
+						
+					</div>
+					<div class="col-6">
+						<a style="text-decoration: none" href="{%url 'view_coin' item.id %}"
+							><h5 style="padding: 5px 0; text-align: left">
+								<span style="color: black; font: size 20px"
+									>{{item.symbol}}
+								</span>
+								<span style="color: grey">{{item.name}}</span>
+							</h5></a
+						>
+					</div>
+					<div class="col-4">
+						<h5 id="index_price_{{item.id}}" style="padding: 5px">${{item.priceUsd|floatformat:4}}</h5>
+					</div>
+				</div>
+			</div>
 
-<div style="display: flex;flex-wrap: wrap;" class="d-flex float-end">
-    <div class="p-2  flex-fill"><img src="https://img.freepik.com/free-photo/abstract-grunge-decorative-relief-navy-blue-stucco-wall-texture-wide-angle-rough-colored-background_1258-28311.jpg" alt=""></div>
-    <div class="p-2  flex-fill ">
-        {%for item in coins%}
-    <div class="front_market" id="front_market_div_{{item.id}}">
-     <a href="{%url 'view_coin' item.id %}"><h6>{{item.name}} ({{item.symbol}})</h6></a>   
-    <p>Price: {{item.priceUsd|floatformat:4}}</p>
-    </div>
+			{%endfor%}
 
-        {%endfor%}
-     <a class="m-3" href="{%url 'markets'%}"><span style="color: grey;">View All 100+ coins</span></a>
-   
-  </div>
-
-
+			<a class="m-3" href="{%url 'markets'%}"
+				><span style="color: grey">View All 100+ coins</span></a
+			>
+		</div>
+	</div>
+</div>
 
 {%endblock%}

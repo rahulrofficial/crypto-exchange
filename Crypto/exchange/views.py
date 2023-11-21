@@ -11,9 +11,9 @@ import json
 
 
 # Create your views here.
-#https://cryptocurrencyliveprices.com/img/eth-ethereum.png
+
 def index(request):
-    url = 'https://api.coincap.io/v2/assets?limit=5'
+    url = 'https://api.coincap.io/v2/assets?limit=10'
     
     res = requests.get(url)
     response = json.loads(res.text)

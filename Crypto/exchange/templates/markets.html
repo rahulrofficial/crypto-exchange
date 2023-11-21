@@ -1,20 +1,30 @@
-{% extends "layout.html" %}
-{% load static %}
-
-
-{%block body%}
+{% extends "layout.html" %} {% load static %} {%block body%}
 <h3>Markets Overview</h3>
-<div id="container" >
-    {%for item in coins%}
-    <div>
-     <a href="{%url 'view_coin' item.id %}"><h6>{{item.name}} ({{item.symbol}})</h6></a>   
-    <p>Price: {{item.priceUsd|floatformat:4}}</p>
-    </div>
+<div id="container">
+	{%for item in coins%}
+	<div class="row">
+		<div class="col-1 mt-2">
+            <a href="{%url 'view_coin' item.id %}">
+                <img
+				src="https://cryptologos.cc/logos/{{item.id}}-{{item.symbol|lower}}-logo.png"
+				width="50px" 
+				alt="" />
 
-{%endfor%}
+            </a>
+			
+		</div>
+        
+		<div class="col-2 ms-5">
+			<a style="text-decoration: none;color: black;" href="{%url 'view_coin' item.id %}"
+						><h4 style="padding:5px 0;text-align:left;">{{item.symbol}} </h4>
+                        <h5 style="color: grey;">{{item.name}}</h5>
+                    </a>
+                        
+			<p>${{item.priceUsd|floatformat:4}}</p>
+		</div>
+	</div>
 
-  
-
+	{%endfor%}
 </div>
 
 {%endblock%}
