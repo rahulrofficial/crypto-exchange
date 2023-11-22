@@ -38,11 +38,11 @@ class Watchlist(models.Model):
 
 class History(models.Model):
     transaction_on=models.DateTimeField(default=datetime.datetime.now())
-    buyer_receier=models.ForeignKey(User,on_delete=models.CASCADE,related_name="received")
+    buyer_receiver=models.ForeignKey(User,on_delete=models.CASCADE,related_name="received")
     seller_sender=models.ForeignKey(User,on_delete=models.CASCADE,related_name="send")
     transacted_coin=models.ForeignKey(List_Coin,on_delete=models.CASCADE,related_name="transacted")
     transacted_coin_value=models.FloatField()
     transacted_amount=models.FloatField(default=0)
 
     def __str__(self):
-        return f"{self.seller_sender} send {self.transacted_amount} {self.transacted_coin} at {self.transacted_coin_value} per USD to {self.buyer_receier} on {self.transaction_on}"
+        return f"{self.seller_sender} send/sold {self.transacted_amount} {self.transacted_coin} at {self.transacted_coin_value} per USD to {self.buyer_receiver} on {self.transaction_on.strftime('%c')}"

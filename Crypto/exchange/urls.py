@@ -9,5 +9,7 @@ urlpatterns = [
     path("view_coin/<str:id>", views.view_coin, name="view_coin"),
     path("markets", views.markets, name="markets"),
     path("deposit", views.deposit, name="deposit"),
-    path("wallet", views.wallet, name="wallet")
+    path("wallet", views.wallet, name="wallet"),
+    path("buy_sell", views.buy_sell, name="buy_sell"),
+    path("history", views.history, name="history")
 ]
