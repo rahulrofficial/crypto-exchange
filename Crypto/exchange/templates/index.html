@@ -2,7 +2,7 @@
 
 <div  class="container">
 	<div class="row">
-		<div style="width:750px;height:500px;" class="col-6 mb-5"> 
+		<div style="width:750px;height:500px;" class="mb-5 col-xs-6 col-sm-12 col-md-6"> 
 			<div id="carouselExampleInterval" class=" carousel slide carousel-fade me-2" data-bs-ride="carousel">
 				<div class="carousel-inner" ">
 				  <div class="carousel-item active" data-bs-interval="3000">
@@ -53,7 +53,8 @@
 				  <span class="visually-hidden">Next</span>
 				</button>
 			  </div>
-			
+			 <!-- 
+			"https://cdn.pixabay.com/photo/2016/01/25/01/52/dollar-1159943_1280.png"-->
 		</div> 
 		<div style="width:500px;height:800px;" class="col-6 ">
 			{%for item in coins%}
@@ -62,7 +63,8 @@
 				<div class="row">
 					<div class="col-2"><a href="{%url 'view_coin' item.id %}">
 						<img
-							src="https://cryptologos.cc/logos/{{item.id}}-{{item.symbol|lower}}-logo.png"
+							src="https://cryptologos.cc/logos/{{item.id}}-{{item.symbol|lower}}-logo.png"							
+							
 							width="40px"
 							alt="" />
 					</a>

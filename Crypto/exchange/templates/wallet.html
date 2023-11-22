@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+    
+
+    {% if message %}
+        <div>{{ message }}</div>
+    {% endif %}
+
+    <h1>Wallet</h1>
+
+
+    {%for coin in coins%}
+    <h3><img src="{{coin.coin.logo_url}}" alt="" width="40px"> {{coin.coin.symbol}}   {{coin.current_coin_amount}}</h3>
+    {%endfor%}
+
+{% endblock %}

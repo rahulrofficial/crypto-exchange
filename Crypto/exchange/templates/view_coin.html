@@ -7,41 +7,54 @@
 	{{coin.name}} Price
 	<span style="font-size: 20px; color: grey">{{coin.symbol}}</span>
 </h1>
-<div style="display: flex; flex-wrap: wrap" class="d-flex">
-	<div class="p-2 col-md-8 bg-info">
+<div class="container">
+	<div class="row">
+		<div style="width: 700px; height: 400px;" class="mb-5 col-xs-7 col-sm-8 col-md-6 bg-info">
+			
+		</div>
+		<div class="col-xs-5 col-sm-4 col-md-6 ">
+			<div >
+				<table class="table">
+					<tr>
+						<td>Supply</td>
+						<td class="display_detail">{{coin.supply|floatformat:0}}</td>
+					</tr>
+					<tr>
+						<td>Max Supply</td>
+						<td class="display_detail">{{coin.maxSupply|floatformat:0}}</td>
+					</tr>
 		
+					<tr>
+						<td>Market Cap</td>
+						<td class="display_detail">{{coin.marketCapUsd|floatformat:4}}</td>
+					</tr>
+					<tr>
+						<td>Volume Used 24Hr</td>
+						<td class="display_detail">{{coin.volumeUsd24Hr|floatformat:4}}</td>
+					</tr>
+		
+					<tr>
+						<td>Price</td>
+						<td class="display_detail">$ {{coin.priceUsd|floatformat:4}}</td>
+					</tr>
+		
+					<tr>
+						<td>Change Percent 24Hr</td>
+						<td class="display_detail">{{coin.changePercent24Hr|floatformat:4}}</td>
+					</tr>
+				</table>
+			</div>
+
+		</div>
+
 	</div>
-	<div class="p-2 col-md-4">
-		<table class="table">
-			<tr>
-				<td>Supply</td>
-				<td class="display_detail">{{coin.supply|floatformat:0}}</td>
-			</tr>
-			<tr>
-				<td>Max Supply</td>
-				<td class="display_detail">{{coin.maxSupply|floatformat:0}}</td>
-			</tr>
 
-			<tr>
-				<td>Market Cap</td>
-				<td class="display_detail">{{coin.marketCapUsd|floatformat:4}}</td>
-			</tr>
-			<tr>
-				<td>Volume Used 24Hr</td>
-				<td class="display_detail">{{coin.volumeUsd24Hr|floatformat:4}}</td>
-			</tr>
-
-			<tr>
-				<td>Price</td>
-				<td class="display_detail">$ {{coin.priceUsd|floatformat:4}}</td>
-			</tr>
-
-			<tr>
-				<td>Change Percent 24Hr</td>
-				<td class="display_detail">{{coin.changePercent24Hr|floatformat:4}}</td>
-			</tr>
-		</table>
-	</div>
 </div>
+
+
+
+	
+	
+
 
 {%endblock%}
