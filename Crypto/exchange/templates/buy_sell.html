@@ -4,9 +4,7 @@
 
     <h2>Buy/Sell</h2>
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+   
 
     <form action="{% url 'buy_sell' %}" method="post">
         {% csrf_token %}

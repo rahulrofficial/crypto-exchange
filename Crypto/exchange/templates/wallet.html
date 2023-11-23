@@ -4,9 +4,7 @@
 
     
 
-    {% if message %}
-        <div>{{ message }}</div>
-    {% endif %}
+ 
 
     <h1>Wallet</h1>
 
@@ -37,7 +35,8 @@
                 <p id="wallet_current_total_amount_{{item.coin.coin_id}}"></p>
             </div>
         </div>
-    
+        {%empty%}
+        <h4>No Coins Yet</h4>
         {%endfor%}
     </div>
 

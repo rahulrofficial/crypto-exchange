@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+    
+
+  
+
+    <h1>Active Orders</h1>
+
+<ul>
+    {%for order in orders%}
+
+<li><h5>{{order}}</h5></li>
+{%empty%}
+<li><h5 style="color: red;">No Active Orders Yet</h5></li>
+    {%endfor%}
+
+
+</ul>
+   
+
+{% endblock %}

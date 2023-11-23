@@ -2,11 +2,11 @@
 
 {% block body %}
 
-    <h2>P2P Transfer</h2>
+    <h2>Create Orders</h2>
 
    
 
-    <form action="{% url 'transfer' %}" method="post">
+    <form action="{% url 'create_orders' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
            {{form}}

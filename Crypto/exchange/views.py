@@ -5,11 +5,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.exceptions import ValidationError
-from .models import User,List_Coin,Coin,Wallet,Watchlist,History
+from .models import User,List_Coin,Coin,Wallet,Watchlist,History,Orders,Order_wallet
 from django import forms
 import requests
 import json
-import time
+import datetime
 
 
 
@@ -77,24 +77,39 @@ def is_user(username):
     if not username in [user.username for user in User.objects.all()]:
         raise ValidationError('Invalid User')
 
+def get_coin_list():
+    coin_list=tuple((coin.id,coin.title) for coin in List_Coin.objects.all())
+    return coin_list[1:]
+def get_user_list():
+    user_list=tuple((user.username,user.username) for user in User.objects.all().exclude(username='cryptohub'))
+    return user_list
+     
+
+
 class Deposit(forms.Form):
     amount=forms.IntegerField(label=False,required=True,widget=forms.NumberInput(attrs={"class": "form-control w-75",'placeholder':'Deposit'}))
 
 class Buy_Sell(forms.Form):
-    coin_list=tuple((coin.id,coin.title) for coin in List_Coin.objects.all())
-    coin_list=coin_list[1:]
     
-    coins=forms.ChoiceField(label=False,choices=coin_list,required=True,widget=forms.Select(attrs={"class": "form-control w-75"})) 
+    
+    coins=forms.ChoiceField(label=False,choices=get_coin_list(),required=True,widget=forms.Select(attrs={"class": "form-control w-75"})) 
     amount=forms.FloatField(label=False,required=True,widget=forms.NumberInput(attrs={"class": "form-control w-75",'placeholder':'Amount'}))
-    action=forms.ChoiceField(widget=forms.RadioSelect,choices=(('buy','Buy'),('sell','Sell')))
+    action=forms.ChoiceField(label=False,widget=forms.RadioSelect(attrs={"class": "form-control"}),choices=(('buy','Buy'),('sell','Sell')))
 class Transfer(forms.Form):
-    coin_list=tuple((coin.id,coin.title) for coin in List_Coin.objects.all())
-    coin_list=coin_list[1:]
+    #For live updation of users in forms when database changes
+    def __init__(self, *args, **kwargs):
+        super(Transfer, self).__init__(*args, **kwargs)     
+        self.fields['to'] =forms.ChoiceField(choices =get_user_list(),required=True,widget=forms.Select(attrs={"class": "form-control w-75 mb-2"})) 
+        self.fields['coins']=forms.ChoiceField(label=False,choices =get_coin_list(),required=True,widget=forms.Select(attrs={"class": "form-control w-75 mb-2"})) 
+        self.fields['amount']=forms.FloatField(label=False,required=True,widget=forms.NumberInput(attrs={"class": "form-control w-75",'placeholder':'Amount'}))
     
-    user_list=tuple((user.username,user.username) for user in User.objects.all().exclude(username='cryptohub'))
-    to=forms.ChoiceField(choices =user_list,required=True,widget=forms.Select(attrs={"class": "form-control w-75"})) 
-    coins=forms.ChoiceField(label=False,choices =coin_list,required=True,widget=forms.Select(attrs={"class": "form-control w-75"})) 
-    amount=forms.FloatField(label=False,required=True,widget=forms.NumberInput(attrs={"class": "form-control w-75",'placeholder':'Amount'}))
+    
+class Create_orders(forms.Form):    
+    coins=forms.ChoiceField(label=False,choices=get_coin_list(),required=True,widget=forms.Select(attrs={"class": "form-control w-75"})) 
+    amount=forms.FloatField(label=False,required=True,widget=forms.NumberInput(attrs={"class": "form-control w-75",'placeholder':'No of Coins'}))
+    price_per_coin=forms.FloatField(label=False,required=True,widget=forms.NumberInput(attrs={"class": "form-control w-75",'placeholder':'Required Price/Coin'}))
+    action=forms.ChoiceField(label=False,widget=forms.RadioSelect,choices=(('buy','Buy'),('sell','Sell')))
+    
     
 # Create your views here.
 
@@ -130,7 +145,7 @@ def wallet(request):
         wallet=Wallet.objects.get(owner=request.user)
         coins=wallet.coins.all()
     except:
-        coins="Haven't Deposited anything Yet"
+        coins=[]
 
     return render(request,'wallet.html',{'coins':coins})
 
@@ -251,7 +266,7 @@ def buy_sell(request):
             action=form.cleaned_data['action'] 
             listed_coin=List_Coin.objects.get(pk=coin_id)
             usd_coin=List_Coin.objects.get(coin_id='usd')
-            print(listed_coin,listed_coin.coin_id)
+            
             url=f'http://api.coincap.io/v2/assets/{listed_coin.coin_id}'
             res = requests.get(url)
             response = json.loads(res.text)
@@ -360,6 +375,7 @@ def buy_sell(request):
                 exchange_coin.save()
                 user_wallet.save()
                 exchange_wallet.save()
+                
                 history=History(
                 buyer_receiver=exchange_user,
                 seller_sender=request.user,
@@ -387,20 +403,184 @@ def transfer(request):
     if request.method=="POST":
         form=Transfer(request.POST)        
         if form.is_valid():
-            amount=form.cleaned_data['amount'] 
+            amount=float(form.cleaned_data['amount']) 
             
-            coin_id=int(form.cleaned_data['coins']) 
+            id=int(form.cleaned_data['coins']) 
             to=form.cleaned_data['to'] 
-            print(amount,coin_id,to)
-
+            transfer_coin=List_Coin.objects.get(pk=id)
+            url=f'http://api.coincap.io/v2/assets/{transfer_coin.coin_id}'
+            res = requests.get(url)
+            response = json.loads(res.text)
+            current_coin_price=round(float(response['data']['priceUsd']),4)
+            if to==request.user.username:
+                return render(request,'transfer.html',{'form':form,'message':'You can not send money to yourself'})
+            receiver=User.objects.get(username=to)
+            try:
+                sender_wallet=Wallet.objects.get(owner=request.user)
+            except:
+                return render(request,'transfer.html',{'form':form,'message':'Please add funds and create a wallet first'})
+            try:
+                sender_coin=sender_wallet.coins.filter(coin=transfer_coin).first()
+                if not sender_coin:
+                    raise IntegrityError
+            except:
+                return render(request,'transfer.html',{'form':form,'message':f'You do not have a {transfer_coin.title} wallet'})
+                
+            if sender_coin.current_coin_amount< amount:
+                return render(request,'transfer.html',{'form':form,'message':'Insufficient Funds'})
+            
+            try:
+                receiver_wallet=Wallet.objects.get(owner=receiver)
+            except:
+                receiver_wallet=Wallet(owner=receiver)
+                receiver_wallet.save()
+            try:
+                receiver_coin=receiver_wallet.coins.filter(coin=transfer_coin).first()
+                if not receiver_coin:
+                    raise IntegrityError
+            except:
+                receiver_coin=Coin(coin=transfer_coin)
+                receiver_coin.save()
+                receiver_wallet.coins.add(receiver_coin)
+                receiver_wallet.save()
+                
+            sender_coin.current_coin_amount-=amount
+            receiver_coin.current_coin_amount+=amount
+            sender_coin.save()
+            receiver_coin.save()
+            sender_wallet.save()
+            receiver_wallet.save()
+            history=History(
+                buyer_receiver=receiver,
+                seller_sender=request.user,
+                transacted_coin=transfer_coin,
+                transacted_coin_value=current_coin_price,
+                transacted_amount=amount
+                                )
+            history.save()
+            return HttpResponseRedirect(reverse("wallet"))           
+            
+                
+                
 
         else:
             return render(request,'transfer.html',{'form':form})
 
-
-
-
-
-
     return render(request,'transfer.html',{'form':Transfer()})
+
+
+
+@login_required
+def add_to_watchlist(request,id):
+     #id=coin_id not pk
+    coin=List_Coin.objects.get(coin_id=id)
+    
+    try:
+        watch=Watchlist.objects.get(watcher=request.user)
+        watch.watch_list.add(coin)
+    except:
+        watch=Watchlist(watcher=request.user)        
+        watch.save()  
+        watch.watch_list.add(coin)
+    
+    
+    watch.save()
+    return HttpResponseRedirect(reverse("watchlist"))
+
+
+def watchlist(request):
+    
+    watchlists=Watchlist.objects.filter(watcher=request.user)
+    
+    
+    
+    return render(request,'watchlist.html',{'watchlist':watchlists})
+
+def my_orders(request):
+    orders=Orders.objects.filter(lister=request.user)
+    
+    return render(request,'my_orders.html',{'orders':orders})
+
+def all_orders(request):
+    orders=Orders.objects.all().exclude(lister=request.user)
+    
+    return render(request,'all_orders.html',{'orders':orders})
+
+def create_orders(request):
+    if request.method=="POST":
+        form=Create_orders(request.POST)        
+        if form.is_valid():
+            id=int(form.cleaned_data['coins'])
+            amount=float(form.cleaned_data['amount'])
+            price_per_coin=float(form.cleaned_data['price_per_coin']) 
+            action=form.cleaned_data['action']
+            print(id,amount,price_per_coin,action)
+            order_coin=List_Coin.objects.get(pk=id)
+            if action=='buy':
+                usd_coin=List_Coin.objects.get(coin_id='usd')
+            try:
+                lister_wallet=Wallet.objects.get(owner=request.user)
+            except:
+                return render(request,'create_orders.html',{'form':form,'message':'Please add funds and create a wallet first'})
+            try:
+                if action=='buy':
+                    lister_coin=lister_wallet.coins.filter(coin=usd_coin).first()
+                    if not lister_coin:
+                        raise IntegrityError
+                else:#sell
+                    lister_coin=lister_wallet.coins.filter(coin=order_coin).first()
+                    if not lister_coin:
+                        raise IntegrityError
+            except:
+                return render(request,'create_orders.html',{'form':form,'message':f"You do not have a {usd_coin.title if action=='buy' else order_coin.title} wallet"})
+            
+            Total_amount=amount
+            if action=='buy':
+                Total_amount=amount*price_per_coin   
+            if lister_coin.current_coin_amount< Total_amount:
+                return render(request,'create_orders.html',{'form':form,'message':'Insufficient Funds to place an Order'})           
+            lister_coin.current_coin_amount-=Total_amount
+            lister_coin.save()
+            lister_wallet.save()
+            try:
+                
+                order=Orders(
+                    lister=request.user,
+                    order_coin=order_coin,
+                    order_coin_no=amount,
+                    order_price_per_coin=price_per_coin,
+                    order_amount=price_per_coin*amount,
+                    is_buy=action=='buy',
+                    created=datetime.datetime.now()
+                )
+                order.save()
+                temp_wallet=Order_wallet(
+                    lister=request.user,
+                    order=order,
+                    temp_coin= usd_coin if action=='buy' else order_coin,
+                    frozen_amount=Total_amount                
+                    
+                )
+                temp_wallet.save()
+            except:
+                lister_coin.current_coin_amount+=Total_amount
+                lister_coin.save()
+                lister_wallet.save()
+                
+            
+            return HttpResponseRedirect(reverse("my_orders"))
+        
+        else:
+            return render(request,'create_orders.html',{'form':form,'message':'Invalid Details'})
+            
+    
+    
+    
+    
+    
+    return render(request,'create_orders.html',{'form':Create_orders()})
+    
+    
+    
+    
     
