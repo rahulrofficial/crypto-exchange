@@ -11,8 +11,34 @@
     <h1>Wallet</h1>
 
 
-    {%for coin in coins%}
-    <h3><img src="{{coin.coin.logo_url}}" alt="" width="40px"> {{coin.coin.symbol}}   {{coin.current_coin_amount}}</h3>
-    {%endfor%}
+    <div id="container">
+        {%for item in coins%}
+        <div class="row">
+            <div class="col-1 mt-2">
+                
+                <a href="{%url 'view_coin' item.coin.coin_id %}"                
+                ><img
+                    src={{item.coin.logo_url}}
+                    width="50px" 
+                    alt="" />    
+                </a>
+               
+                
+                
+            </div>
+            
+            <div class="col-2 ms-5">
+                <a style="text-decoration: none;color: black;" href="{%url 'view_coin' item.coin.coin_id %}"
+                            ><h4 style="padding:5px 0;text-align:left;">{{item.coin.symbol}} </h4>
+                            <h5 style="color: grey;">{{item.coin.name}}</h5>
+                        </a>
+                            
+                <p>{{item.current_coin_amount|floatformat:4}}</p>
+                <p id="wallet_current_total_amount_{{item.coin.coin_id}}"></p>
+            </div>
+        </div>
+    
+        {%endfor%}
+    </div>
 
 {% endblock %}

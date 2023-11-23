@@ -9,12 +9,22 @@ from .models import User,List_Coin,Coin,Wallet,Watchlist,History
 from django import forms
 import requests
 import json
+import time
 
 
 
 
 def database_listed_coins_updater():
-    
+    exchange_per_reserve=1000000
+    try:
+        exchange_user=User.objects.get(username='cryptohub')
+    except:
+        return None
+    try:
+        exchange_wallet=Wallet.objects.get(owner=exchange_user)
+    except:
+        exchange_wallet=Wallet(owner=exchange_user)
+        exchange_wallet.save()
     if not len(List_Coin.objects.all()):
         coin=List_Coin(
             coin_id='usd',
@@ -32,12 +42,37 @@ def database_listed_coins_updater():
             coin_id=item['id'],
             symbol=item['symbol'],
             title=item['name'],
-            logo_url=f"https://cryptologos.cc/logos/{item['id']}-{item['symbol'].lower()}-logo.png"
-                            )
-            coins.save()
-            
+            logo_url=f"https://cryptologos.cc/logos/{item['id']}-{item['symbol'].lower()}-logo.png"                            )
+            coins.save()            
         print('Coins Updated Successfully')
+        print('Coin Purchase Started')
+        listed_coin=List_Coin.objects.get(coin_id='usd')
+        current_amount=exchange_per_reserve/1
+        exchange_coin=Coin(coin=listed_coin,current_coin_amount=current_amount)
+        exchange_coin.save()
+        exchange_wallet.coins.add(exchange_coin)
+        exchange_wallet.save()
+        print(f"Purchased {current_amount} {'usd'} at {1}/USD ")
+        
+        for coin in response['data']:            
+            
+            current_coin_price=float(coin['priceUsd'])
+           
+            listed_coin=List_Coin.objects.get(coin_id=coin['id'])
+            
+            current_amount=exchange_per_reserve/current_coin_price
+            current_amount=current_amount
+            
+            exchange_coin=Coin(coin=listed_coin,current_coin_amount=current_amount)
+            exchange_coin.save()
+            
+            exchange_wallet.coins.add(exchange_coin)
+            exchange_wallet.save()
+            print(f"Purchased {current_amount} {coin['id']} at {current_coin_price}/USD ")
+            
+
 database_listed_coins_updater()
+
 def is_user(username):
     if not username in [user.username for user in User.objects.all()]:
         raise ValidationError
@@ -70,10 +105,14 @@ def index(request):
     return render(request,'index.html',{'coins':response['data']})
 
 def view_coin(request,id):
-    url=f'http://api.coincap.io/v2/assets/{id}'
-    res = requests.get(url)
-    response = json.loads(res.text)
-    return render(request,'view_coin.html',{'coin':response['data']})
+    if not id=="usd":
+        url=f'http://api.coincap.io/v2/assets/{id}'
+        res = requests.get(url)
+        response = json.loads(res.text)
+        coin=response['data']
+    else:
+        coin={'priceUsd':1,'symbol':'usd','name':'US Dollar'}
+    return render(request,'view_coin.html',{'coin':coin})
 
 def markets(request):
     url = 'https://api.coincap.io/v2/assets'
