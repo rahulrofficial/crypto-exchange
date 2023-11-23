@@ -11,5 +11,6 @@ urlpatterns = [
     path("deposit", views.deposit, name="deposit"),
     path("wallet", views.wallet, name="wallet"),
     path("buy_sell", views.buy_sell, name="buy_sell"),
-    path("history", views.history, name="history")
+    path("history", views.history, name="history"),
+    path("transfer", views.transfer, name="transfer")
 ]

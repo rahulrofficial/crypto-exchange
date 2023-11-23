@@ -75,22 +75,24 @@ database_listed_coins_updater()
 
 def is_user(username):
     if not username in [user.username for user in User.objects.all()]:
-        raise ValidationError
+        raise ValidationError('Invalid User')
 
 class Deposit(forms.Form):
     amount=forms.IntegerField(label=False,required=True,widget=forms.NumberInput(attrs={"class": "form-control w-75",'placeholder':'Deposit'}))
 
 class Buy_Sell(forms.Form):
     coin_list=tuple((coin.id,coin.title) for coin in List_Coin.objects.all())
-    
+    coin_list=coin_list[1:]
     
     coins=forms.ChoiceField(label=False,choices=coin_list,required=True,widget=forms.Select(attrs={"class": "form-control w-75"})) 
     amount=forms.FloatField(label=False,required=True,widget=forms.NumberInput(attrs={"class": "form-control w-75",'placeholder':'Amount'}))
     action=forms.ChoiceField(widget=forms.RadioSelect,choices=(('buy','Buy'),('sell','Sell')))
 class Transfer(forms.Form):
     coin_list=tuple((coin.id,coin.title) for coin in List_Coin.objects.all())
+    coin_list=coin_list[1:]
     
-    to=forms.CharField(max_length=64,validators=[is_user],label=False,required=True ,widget=forms.TextInput(attrs={'class': "form-control w-75",'placeholder':'To'})) 
+    user_list=tuple((user.username,user.username) for user in User.objects.all().exclude(username='cryptohub'))
+    to=forms.ChoiceField(choices =user_list,required=True,widget=forms.Select(attrs={"class": "form-control w-75"})) 
     coins=forms.ChoiceField(label=False,choices =coin_list,required=True,widget=forms.Select(attrs={"class": "form-control w-75"})) 
     amount=forms.FloatField(label=False,required=True,widget=forms.NumberInput(attrs={"class": "form-control w-75",'placeholder':'Amount'}))
     
@@ -236,7 +238,7 @@ def register(request):
         return render(request, "register.html")
     
     
-    
+@login_required    
 def buy_sell(request):
     exchange_per_reserve=1000000
     if request.method=="POST":
@@ -378,4 +380,27 @@ def history(request):
     history=History.objects.all()
     
     return render(request,'history.html',{'history':history})
+
+
+
+def transfer(request):
+    if request.method=="POST":
+        form=Transfer(request.POST)        
+        if form.is_valid():
+            amount=form.cleaned_data['amount'] 
+            
+            coin_id=int(form.cleaned_data['coins']) 
+            to=form.cleaned_data['to'] 
+            print(amount,coin_id,to)
+
+
+        else:
+            return render(request,'transfer.html',{'form':form})
+
+
+
+
+
+
+    return render(request,'transfer.html',{'form':Transfer()})
     
