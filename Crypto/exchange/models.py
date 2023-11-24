@@ -34,19 +34,22 @@ class Wallet(models.Model):
 class Watchlist(models.Model):
     #user -foreign key
     watcher=models.ForeignKey(User,on_delete=models.CASCADE,related_name="watching")
-    #itms
+    #items
     watch_list=models.ManyToManyField(List_Coin,blank=True,related_name="watchers")
 
 class History(models.Model):
     transaction_on=models.DateTimeField(default=datetime.datetime.now())
-    buyer_receiver=models.ForeignKey(User,on_delete=models.CASCADE,related_name="received")
-    seller_sender=models.ForeignKey(User,on_delete=models.CASCADE,related_name="send")
+    to_user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="received")
+    from_user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="send")
     transacted_coin=models.ForeignKey(List_Coin,on_delete=models.CASCADE,related_name="transacted")
     transacted_coin_value=models.FloatField()
-    transacted_amount=models.FloatField(default=0)
+    """transacted_amount-number of coins
+    """
+    transacted_amount=models.FloatField(default=0)#number of coins
+    transact_action=models.CharField(max_length=64,blank=True)#Purchased/Sold/Send/
 
     def __str__(self):
-        return f"{self.seller_sender} send/sold {self.transacted_amount} {self.transacted_coin} at {self.transacted_coin_value} per USD to {self.buyer_receiver} on {self.transaction_on.strftime('%c')}"
+        return f"{self.from_user} {self.transact_action} {self.transacted_amount} {self.transacted_coin} at {self.transacted_coin_value} per USD to {self.to_user} on {self.transaction_on.strftime('%c')}"
     
     
 class Orders(models.Model):

@@ -32,7 +32,22 @@ document.addEventListener("DOMContentLoaded", function (event) {
             id: event.target.dataset.order_id,
             owner:event.target.dataset.owner
           })
-        })
+        }).then((response)=>response.json()).then(reply=>{
+          
+          if (reply.status=='true'){
+            window.open("wallet","_self")
+            document.querySelector("#message_display").style.display = "block";
+            document.querySelector("#message_content").innerHTML=reply.message
+            
+          }else{
+            document.querySelector("#message_display").style.display = "block";
+            document.querySelector("#message_content").innerHTML=reply.message
+          }
+            
+          }      
+      
+        
+      )
 
 
 
@@ -53,7 +68,22 @@ document.addEventListener("DOMContentLoaded", function (event) {
             id: event.target.dataset.order_id,
             owner:event.target.dataset.owner
           })
-        })
+        }).then((response)=>response.json()).then(reply=>{
+          
+          if (reply.status=='true'){
+            window.open("my_orders","_self")
+            
+            
+            
+          }else{
+            document.querySelector("#message_display").style.display = "block";
+            document.querySelector("#message_content").innerHTML=reply.message
+          }
+            
+          }      
+      
+        
+      )
       });
     });
 

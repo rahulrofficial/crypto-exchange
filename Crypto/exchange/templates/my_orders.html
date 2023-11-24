@@ -37,7 +37,11 @@
       <td style="padding-top: 14px">${{order.order_amount}}</td>
 
       <td style="padding-top: 14px; color: gray">{{order.created}}</td>
-      <td>
+      <td>{%if order.is_fulfilled%}
+        <td style="padding-top: 14px; color: gray">Fulfilled on:{{order.fulfilled_on}}</td>
+        {%elif order.is_closed%}
+        <td style="padding-top: 14px; color: gray">Closed on:{{order.closed_on}}</td>
+        {%else%}
         <button
           data-order_id="{{order.id}}"
           data-owner="{{order.lister}}"          
@@ -46,6 +50,7 @@
         >
           Close
         </button>
+        {%endif%}
       </td>
     </tr>
 
