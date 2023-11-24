@@ -2,21 +2,28 @@
 
 {% block body %}
 
-    
+   <div id="history_div">
 
-  
 
     <h1>History</h1>
 
-<ul>
-    {%for event in history%}
-
-<li><h5>{{event}}</h5></li>
+    <ul>
+        {%for event in history%}
     
-    {%endfor%}
+    <li><h5>{{event}}</h5></li>
+        
+        {%endfor%}
+    
+    
+    </ul>
+       
 
 
-</ul>
+
+   </div> 
+
+  
+
    
 
 {% endblock %}

@@ -1,31 +1,36 @@
-{% extends "layout.html" %} {% block body %} 
+{% extends "layout.html" %} {% block body %}
 
-<h1>Watchlist</h1>
+<div id="watchlist_div">
+  <h1>Watchlist</h1>
 
-<ul>
-	{%for item in watchlist%}
+  <ul>
+    {%for item in watchlist%}
 
-	<div class="row">
-		<div class="col-1 mt-2">
-			<a href="{%url 'view_coin' item.coin.coin_id %}"
-				><img src="{{item.coin.logo_url}}" width="50px" alt="" />
-			</a>
-		</div>
+    <div class="row">
+      <div class="col-1 mt-2">
+        <a href="{%url 'view_coin' item.coin.coin_id %}"
+          ><img src="{{item.coin.logo_url}}" width="50px" alt="" />
+        </a>
+      </div>
 
-		<div class="col-2 ms-5">
-			<a
-				style="text-decoration: none; color: black"
-				href="{%url 'view_coin' item.coin.coin_id %}"
-				><h4 style="padding: 5px 0; text-align: left">{{item.coin.symbol}}</h4>
-				<h5 style="color: grey">{{item.coin.name}}</h5>
-			</a>
+      <div class="col-2 ms-5">
+        <a
+          style="text-decoration: none; color: black"
+          href="{%url 'view_coin' item.coin.coin_id %}"
+        >
+          <h4 style="padding: 5px 0; text-align: left">{{item.coin.symbol}}</h4>
+          <h5 style="color: grey">{{item.coin.name}}</h5>
+        </a>
 
-			<p>{{item.current_coin_amount|floatformat:4}}</p>
-			<p id="wallet_current_total_amount_{{item.coin.coin_id}}"></p>
-		</div>
-	</div>
+        <p>{{item.current_coin_amount|floatformat:4}}</p>
+        <p id="wallet_current_total_amount_{{item.coin.coin_id}}"></p>
+      </div>
+    </div>
 
-	{%empty%} <h5 style="color: red;">Add some coins to Watchlist</h5> {%endfor%}
-</ul>
+    {%empty%}
+    <h5 style="color: red">Add some coins to Watchlist</h5>
+    {%endfor%}
+  </ul>
+</div>
 
 {% endblock %}

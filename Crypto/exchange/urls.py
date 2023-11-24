@@ -16,5 +16,10 @@ urlpatterns = [
     path("watchlist", views.watchlist, name="watchlist"),#
     path("create_orders", views.create_orders, name="create_orders"),
     path("my_orders", views.my_orders, name="my_orders"),
-    path("all_orders", views.all_orders, name="all_orders")
+    path("all_orders", views.all_orders, name="all_orders"),
+    path("test", views.test, name="test"),
+
+
+    #apis
+    path("order_deal/<str:action>", views.order_deal, name="order_deal")
 ]

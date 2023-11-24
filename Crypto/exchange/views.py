@@ -2,6 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.exceptions import ValidationError
@@ -48,7 +49,7 @@ def database_listed_coins_updater():
         print('Coin Purchase Started')
         listed_coin=List_Coin.objects.get(coin_id='usd')
         current_amount=exchange_per_reserve/1
-        exchange_coin=Coin(coin=listed_coin,current_coin_amount=current_amount)
+        exchange_coin=Coin(coin=listed_coin,current_coin_amount=current_amount,last_purchased=datetime.datetime.now())
         exchange_coin.save()
         exchange_wallet.coins.add(exchange_coin)
         exchange_wallet.save()
@@ -63,7 +64,7 @@ def database_listed_coins_updater():
             current_amount=exchange_per_reserve/current_coin_price
             current_amount=current_amount
             
-            exchange_coin=Coin(coin=listed_coin,current_coin_amount=current_amount)
+            exchange_coin=Coin(coin=listed_coin,current_coin_amount=current_amount,last_purchased=datetime.datetime.now())
             exchange_coin.save()
             
             exchange_wallet.coins.add(exchange_coin)
@@ -175,7 +176,7 @@ def deposit(request):
                     raise IntegrityError
                 coin.current_coin_amount+=amount
             except IntegrityError:
-                coin=Coin(coin=listed_coin)
+                coin=Coin(coin=listed_coin,last_purchased=datetime.datetime.now())
                 coin.save()
                 wallet.coins.add(coin)
                 coin.current_coin_amount+=amount
@@ -251,7 +252,8 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "register.html")
-    
+
+
     
 @login_required    
 def buy_sell(request):
@@ -264,14 +266,17 @@ def buy_sell(request):
             print(form.cleaned_data['coins'])
             coin_id=int(form.cleaned_data['coins']) 
             action=form.cleaned_data['action'] 
-            listed_coin=List_Coin.objects.get(pk=coin_id)
-            usd_coin=List_Coin.objects.get(coin_id='usd')
+            
             
             url=f'http://api.coincap.io/v2/assets/{listed_coin.coin_id}'
             res = requests.get(url)
             response = json.loads(res.text)
             current_coin_price=round(float(response['data']['priceUsd']),4)
+
             exchange_user=User.objects.get(username='cryptohub')
+
+            listed_coin=List_Coin.objects.get(pk=coin_id)
+            usd_coin=List_Coin.objects.get(coin_id='usd')
             
             try:
                 exchange_wallet=Wallet.objects.get(owner=exchange_user)
@@ -397,6 +402,7 @@ def history(request):
     
     return render(request,'history.html',{'history':history})
 
+ 
 
 
 def transfer(request):
@@ -502,7 +508,7 @@ def my_orders(request):
     return render(request,'my_orders.html',{'orders':orders})
 
 def all_orders(request):
-    orders=Orders.objects.all().exclude(lister=request.user)
+    orders=Orders.objects.all().filter(is_fulfilled=False,is_closed=False)
     
     return render(request,'all_orders.html',{'orders':orders})
 
@@ -539,12 +545,10 @@ def create_orders(request):
                 Total_amount=amount*price_per_coin   
             if lister_coin.current_coin_amount< Total_amount:
                 return render(request,'create_orders.html',{'form':form,'message':'Insufficient Funds to place an Order'})           
-            lister_coin.current_coin_amount-=Total_amount
-            lister_coin.save()
-            lister_wallet.save()
-            try:
+            
+            
                 
-                order=Orders(
+            order=Orders(
                     lister=request.user,
                     order_coin=order_coin,
                     order_coin_no=amount,
@@ -553,19 +557,20 @@ def create_orders(request):
                     is_buy=action=='buy',
                     created=datetime.datetime.now()
                 )
-                order.save()
-                temp_wallet=Order_wallet(
+            order.save()
+            temp_wallet=Order_wallet(
                     lister=request.user,
                     order=order,
                     temp_coin= usd_coin if action=='buy' else order_coin,
                     frozen_amount=Total_amount                
                     
                 )
-                temp_wallet.save()
-            except:
-                lister_coin.current_coin_amount+=Total_amount
+            temp_wallet.save()
+            if temp_wallet.id and order.id:
+                lister_coin.current_coin_amount-=Total_amount
                 lister_coin.save()
                 lister_wallet.save()
+            
                 
             
             return HttpResponseRedirect(reverse("my_orders"))
@@ -579,8 +584,100 @@ def create_orders(request):
     
     
     return render(request,'create_orders.html',{'form':Create_orders()})
+
+
+def order_deal(request,action):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    data = json.loads(request.body) 
+    order_id=int(data.get('id',""))
+    owner=data.get('owner',"")
+
+    lister=User.objects.get(username=owner)
+    order=Orders.objects.get(pk=order_id)
+    doer=request.user
+
+    order_coin=oreder.order_coin    
+    order_price_per_coin=order.order_price_per_coin
+    order_amount=order.order_amount
+
+    lister_wallet=Wallet.objects.get(owner=lister)
+    lister_coin=lister_wallet.coins.filter(coin=order_coin).first()
+    usd_coin=List_coin.objects.get(coin_id='usd')
+    if not lister==doer:
+        try:
+            doer_wallet=Wallet.objects.get(owner=doer)
+        except:
+            return JsonResponse({"error": "Wallet required."}, status=400)
+        try:
+            doer_coin=doer_wallet.coins.filter(coin=order_coin).first()
+            if not doer_coin:
+                raise IntegrityError
+        except:
+            doer_coin=Coin(coin=order_coin)
+            doer_coin.save()
+            doer_wallet.coins.add(doer_coin)
+            doer_wallet.save()
+
+        try:
+            lister_usd_coin=lister_wallet.coins.filter(coin=usd_coin).first()
+            if not lister_usd_coin:
+                raise IntegrityError
+        except:
+            lister_usd_coin=Coin(coin=usd_coin)
+            lister_usd_coin.save()
+            lister_wallet.coins.add(lister_usd_coin)
+            lister_wallet.save()
+
+
+    if action=='buy':
+        lister_temp_wallet=Order_wallet.objects.get(order=order)
+        try:
+            doer_usd_coin=doer_wallet.coins.filter(coin=usd_coin).first()
+            if not doer_usd_coin:
+                raise IntegrityError
+        except:
+            return JsonResponse({"error": "USD wallet required."}, status=400)
+
+        if doer_usd_coin.current_coin_amount < order_amount:
+            return JsonResponse({"error": "Insufficient Funds."}, status=400)
+
+        doer_coin.current_coin_amount+=lister_temp_wallet.frozen_amount
+        doer_coin.save()
+        lister_temp_wallet.frozen_amount=0
+        lister_temp_wallet.save()
+        lister_usd_coin.current_coin_amount+=order_amount
+        doer_usd_coin.current_coin_amount-=order_amount
+
+
+    if action=='sell':
+        pass
+    if action=='close':
+        pass
     
     
-    
-    
+    return JsonResponse({"message": "Action Completed successfully."}, status=201)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def test(request):
+
+    usd_coin=List_Coin.objects.get(coin_id='usd')
+    sample_coin=Coin(coin=usd_coin,current_coin_amount=100)
+
+    print(sample_coin.id)
+    return render(request,'test.html')
     

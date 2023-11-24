@@ -1,23 +1,56 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} {% block body %}
 
-{% block body %}
+<div id="my_orders_div">
+  <h1>My Orders</h1>
 
-    
+  <table class="table table-striped">
+    <tr>
+      <th></th>
+      <th>Symbol</th>
+      <th>Name</th>
+      <th>Type</th>
+      <th>No.of Coins</th>
+      <th>Price/Coin</th>
+      <th>Total</th>
 
-  
+      <th>Created on</th>
+      <th></th>
+    </tr>
 
-    <h1>My Orders</h1>
-
-<ul>
     {%for order in orders%}
 
-<li><h5>{{order}}</h5></li>
-{%empty%}
-<li><h5 style="color: red;">No Orders Yet</h5></li>
+    <tr>
+      <td>
+        <a href="{%url 'view_coin' order.order_coin.coin_id %}">
+          <img src="{{order.order_coin.logo_url}}" width="40px" alt="" />
+        </a>
+      </td>
+      <td style="padding-top: 14px">{{order.order_coin.symbol}}</td>
+      <td style="padding-top: 14px">{{order.order_coin.title}}</td>
+      {%if order.is_buy%}
+      <td style="padding-top: 14px; color: green"><strong>Buy</strong></td>
+      {%else%}
+      <td style="padding-top: 14px; color: red"><strong>Sell</strong></td>
+      {%endif%}
+      <td style="padding-top: 14px">{{order.order_coin_no}}</td>
+      <td style="padding-top: 14px">${{order.order_price_per_coin}}</td>
+      <td style="padding-top: 14px">${{order.order_amount}}</td>
+
+      <td style="padding-top: 14px; color: gray">{{order.created}}</td>
+      <td>
+        <button
+          data-order_id="{{order.id}}"
+          data-owner="{{order.lister}}"          
+          id="my_order_button"
+          class="btn btn-outline-danger"
+        >
+          Close
+        </button>
+      </td>
+    </tr>
+
     {%endfor%}
-
-
-</ul>
-   
+  </table>
+</div>
 
 {% endblock %}
