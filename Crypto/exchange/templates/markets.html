@@ -4,31 +4,35 @@
 
 	<h3>Markets Overview</h3>
 	<div id="container">
-		{%for item in coins%}
-		<div class="row">
-			<div class="col-1 mt-2">
-				<a href="{%url 'view_coin' item.id %}">
-					<img
-					src="https://cryptologos.cc/logos/{{item.id}}-{{item.symbol|lower}}-logo.png"
-					width="50px" 
-					alt="" />
-	
-				</a>
-				
-			</div>
-			
-			<div class="col-2 ms-5">
-				<a style="text-decoration: none;color: black;" href="{%url 'view_coin' item.id %}"
-							><h4 style="padding:5px 0;text-align:left;">{{item.symbol}} </h4>
-							<h5 style="color: grey;">{{item.name}}</h5>
-						</a>
-							
-				<p id="market_current_price_{{item.id}}">${{item.priceUsd|floatformat:4}}</p>
-			</div>
-		</div>
-	
-		{%endfor%}
-	</div>
+        {%for item in coins%}
+        <div class="row">
+      <div class="col-1 mt-2">
+        <a href="{%url 'view_coin' item.coin_id %}">
+          <img src="{{item.logo_url}}" width="50px" alt="" />
+        </a>
+      </div>
+
+      <div class="col-2 ms-5">
+        <a
+          style="text-decoration: none; color: black"
+          href="{%url 'view_coin' item.coin_id %}"
+          ><h4 style="padding: 5px 0; text-align: left">{{item.symbol}}</h4>
+          <h5 style="color: grey">{{item.title}}</h5>
+        </a>
+        {%if item.symbol == 'usd' %}
+        <p id="market_current_price_{{item.coin_id}}">
+          $ 1.0000000
+        </p>
+        {%else%}
+        <p style="font-weight: bold;" >$<span id="market_current_price_{{item.coin_id}}">{{item.priceUsd|floatformat:4}}</span>
+            
+          </p>
+        {%endif%}
+      </div>
+       </div>
+
+          {%endfor%}
+  </div>
 
 
 </div>

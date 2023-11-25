@@ -4,7 +4,7 @@
 
     
 <div id="wallet_div">
-    <h1>Wallet</h1>
+    <h1 class="ms-2">Wallet</h1>
 
 
     <div id="container">
@@ -30,7 +30,11 @@
                         </a>
                             
                 <p>{{item.current_coin_amount|floatformat:4}}</p>
-                <p id="wallet_current_total_amount_{{item.coin.coin_id}}"></p>
+                {%if item.coin.coin_id == 'usd' %}
+                <p style="font-weight: bold;" >$<span data-amount="{{item.current_coin_amount}}" id="wallet_current_total_amount_{{item.coin.coin_id}}">{{item.current_coin_amount|floatformat:6}}</span></p>
+                {%else%}
+                <p style="font-weight: bold;">$<span data-amount="{{item.current_coin_amount}}" id="wallet_current_total_amount_{{item.coin.coin_id}}"></span></p>
+                {%endif%}
             </div>
         </div>
         {%empty%}

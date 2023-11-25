@@ -1,17 +1,17 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<div id="create_orders_div">
-    <h2>Create Orders</h2>
+<div style="padding:20px;height:400px;" id="create_orders_div">
+    <h2 class="ms-3">Create Orders</h2>
 
    
 
-    <form action="{% url 'create_orders' %}" method="post">
+    <form id="create_order_form" action="{% url 'create_orders' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
            {{form}}
         </div>
-        <input class="btn btn-primary" type="submit" value="Action">
+        <input id="create_order_btn" class="btn btn-primary ms-3" type="submit" value="Action">
     </form>
 
 

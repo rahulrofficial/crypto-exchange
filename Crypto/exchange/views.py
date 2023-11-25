@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.core.exceptions import ValidationError
 from .models import User, List_Coin, Coin, Wallet, Watchlist, History, Orders, Order_wallet
+from django.db.models import Q
 from django import forms
 import requests
 import json
@@ -95,17 +96,17 @@ def get_user_list():
 
 class Deposit(forms.Form):
     amount = forms.IntegerField(label=False, required=True, widget=forms.NumberInput(
-        attrs={"class": "form-control w-75", 'placeholder': 'Deposit'}))
+        attrs={"class": "form-control w-75 mb-2 ms-3", 'placeholder': 'Deposit USD'}))
 
 
 class Buy_Sell(forms.Form):
 
     coins = forms.ChoiceField(label=False, choices=get_coin_list(
-    ), required=True, widget=forms.Select(attrs={"class": "form-control w-75"}))
+    ), required=True, widget=forms.Select(attrs={"class": "form-control w-75 mb-2 ms-3"}))
     amount = forms.FloatField(label=False, required=True, widget=forms.NumberInput(
-        attrs={"class": "form-control w-75", 'placeholder': 'Amount'}))
+        attrs={"class": "form-control w-75 mb-2 ms-3", 'placeholder': 'Amount'}))
     action = forms.ChoiceField(label=False, widget=forms.RadioSelect(
-        attrs={"class": "form-control"}), choices=(('buy', 'Buy'), ('sell', 'Sell')))
+        attrs={"class": "form-check-inline mb-2 ms-2","id":"buy_sell_radio_btn"}), choices=(('buy', 'Buy'), ('sell', 'Sell')))
 
 
 class Transfer(forms.Form):
@@ -113,22 +114,22 @@ class Transfer(forms.Form):
     def __init__(self, *args, **kwargs):
         super(Transfer, self).__init__(*args, **kwargs)
         self.fields['to'] = forms.ChoiceField(choices=get_user_list(
-        ), required=True, widget=forms.Select(attrs={"class": "form-control w-75 mb-2"}))
+        ), required=True, widget=forms.Select(attrs={"class": "form-control w-75 mb-2 ms-3"}))
         self.fields['coins'] = forms.ChoiceField(label=False, choices=get_coin_list(
-        ), required=True, widget=forms.Select(attrs={"class": "form-control w-75 mb-2"}))
+        ), required=True, widget=forms.Select(attrs={"class": "form-control w-75 mb-2 ms-3"}))
         self.fields['amount'] = forms.FloatField(label=False, required=True, widget=forms.NumberInput(
-            attrs={"class": "form-control w-75", 'placeholder': 'Amount'}))
+            attrs={"class": "form-control w-75 mb-2 ms-3", 'placeholder': 'Amount'}))
 
 
 class Create_orders(forms.Form):
     coins = forms.ChoiceField(label=False, choices=get_coin_list(
-    ), required=True, widget=forms.Select(attrs={"class": "form-control w-75"}))
+    ), required=True, widget=forms.Select(attrs={"class": "form-control w-75 mb-2 ms-3"}))
     amount = forms.FloatField(label=False, required=True, widget=forms.NumberInput(
-        attrs={"class": "form-control w-75", 'placeholder': 'No of Coins'}))
+        attrs={"class": "form-control w-75 mb-2 ms-3", 'placeholder': 'No of Coins'}))
     price_per_coin = forms.FloatField(label=False, required=True, widget=forms.NumberInput(
-        attrs={"class": "form-control w-75", 'placeholder': 'Required Price/Coin'}))
-    action = forms.ChoiceField(label=False, widget=forms.RadioSelect, choices=(
-        ('buy', 'Buy'), ('sell', 'Sell')))
+        attrs={"class": "form-control w-75 mb-2 ms-3", 'placeholder': 'Required Price/Coin'}))
+    action = forms.ChoiceField(label=False, widget=forms.RadioSelect( attrs={"class": "form-check-inline mb-2 ms-2","id":"order_radio_btn"}), choices=(
+        ('buy', 'Buy Order'), ('sell', 'Sell Order')))
 
 
 # Create your views here.
@@ -154,12 +155,9 @@ def view_coin(request, id):
 
 
 def markets(request):
-    url = 'https://api.coincap.io/v2/assets'
+    coins = List_Coin.objects.all()
 
-    res = requests.get(url)
-    response = json.loads(res.text)
-
-    return render(request, 'markets.html', {'coins': response['data']})
+    return render(request, 'markets.html', {'coins': coins})
 
 
 @login_required
@@ -417,8 +415,8 @@ def buy_sell(request):
 
 def history(request):
 
-    history = History.objects.all()
-
+    history = History.objects.filter(Q(from_user=request.user) | Q(to_user=request.user))
+    history = history.order_by("-transaction_on").all()
     return render(request, 'history.html', {'history': history})
 
 
@@ -518,13 +516,13 @@ def watchlist(request):
 
 def my_orders(request):
     orders = Orders.objects.filter(lister=request.user)
-
+    orders = orders.order_by("-created").all()
     return render(request, 'my_orders.html', {'orders': orders})
 
 
 def all_orders(request):
     orders = Orders.objects.all().filter(is_fulfilled=False, is_closed=False)
-
+    orders = orders.order_by("-created").all()
     return render(request, 'all_orders.html', {'orders': orders})
 
 
@@ -776,8 +774,8 @@ def order_deal(request, action):
 
 def test(request):
 
-    usd_coin = List_Coin.objects.get(coin_id='usd')
-    sample_coin = Coin(coin=usd_coin, current_coin_amount=100)
+    coins = List_Coin.objects.all()
+    
 
-    print(sample_coin.id)
-    return render(request, 'test.html')
+    
+    return render(request, 'test.html',{'coins':coins})

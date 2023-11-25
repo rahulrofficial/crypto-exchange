@@ -56,12 +56,12 @@
 			 <!-- 
 			"https://cdn.pixabay.com/photo/2016/01/25/01/52/dollar-1159943_1280.png"-->
 		</div> 
-		<div style="width:500px;height:800px;" class="col-6 ">
+		<div style="width:550px;height:800px;" class="col-6 ">
 			{%for item in coins%}
 
 			<div style="width: 500px" class="container">
 				<div class="row">
-					<div class="col-2"><a href="{%url 'view_coin' item.id %}">
+					<div class="col-2 me-2"><a href="{%url 'view_coin' item.id %}">
 						<img
 							src="https://cryptologos.cc/logos/{{item.id}}-{{item.symbol|lower}}-logo.png"							
 							
@@ -70,19 +70,20 @@
 					</a>
 						
 					</div>
-					<div class="col-6">
+					<div class="col-4">
 						<a style="text-decoration: none" href="{%url 'view_coin' item.id %}"
 							><h5 style="padding: 5px 0; text-align: left">
 								<span style="color: black; font: size 20px"
 									>{{item.symbol}}
 								</span>
-								<span style="color: grey">{{item.name}}</span>
+								<span style="color: grey;padding: 5px 0;">{{item.name}}</span>
 							</h5></a
 						>
 					</div>
-					<div class="col-4">
-						<h5 id="index_price_{{item.id}}" style="padding: 5px">${{item.priceUsd|floatformat:4}}</h5>
+					<div class="col-5">
+						<h5  style="padding: 5px 0;;font-weight: bold;">$ <span id="index_price_{{item.id}}">{{item.priceUsd|floatformat:4}}</span></h5>
 					</div>
+					
 				</div>
 			</div>
 

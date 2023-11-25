@@ -6,17 +6,67 @@
 
 
     <h1>History</h1>
-
-    <ul>
+<!--
+<ul>
         {%for event in history%}
     
     <li><h5>{{event}}</h5></li>
         
         {%endfor%}
-    
+    transaction_on=models.DateTimeField(default=datetime.datetime.now())
+    to_user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="received")
+    from_user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="send")
+    transacted_coin=models.ForeignKey(List_Coin,on_delete=models.CASCADE,related_name="transacted")
+    transacted_coin_value=models.FloatField()
+    """transacted_amount-number of coins
+    """
+    transacted_amount=models.FloatField(default=0)#number of coins
+    transact_action=models.CharField(max_length=64,blank=True)#Purchased/Sold/Send/
     
     </ul>
        
+
+-->
+<table class="table table-striped">
+<tr>
+
+    <th>From</th>
+    <th>To</th>
+    <th>Coin</th>
+    <th>Name</th>
+    <th>Coin Amount</th>
+    <th>Price/Coin</th>
+    
+    <th>On</th>
+    <th>Status</th>
+</tr>
+{%for event in history%}
+<tr>
+    
+    <td>{{event.from_user}}</td>
+    <td>{{event.to_user}}</td>
+    <td>{{event.transacted_coin.symbol}}</td>
+    <td>{{event.transacted_coin.title}}</td>
+    <td>{{event.transacted_amount}}</td>
+    <td>{{event.transacted_coin_value}}</td>    
+   
+    <td>{{event.transaction_on}}</td>
+    <td>{{event.transact_action}}</td>
+    
+
+
+
+
+</tr>
+
+
+{%endfor%}
+
+
+
+
+</table>
+    
 
 
 
