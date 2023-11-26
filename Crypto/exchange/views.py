@@ -85,7 +85,7 @@ def is_user(username):
 def get_coin_list():
     coin_list = tuple((coin.id, coin.title)
                       for coin in List_Coin.objects.all())
-    return coin_list[1:]
+    return coin_list[2:]
 
 
 def get_user_list():
@@ -767,8 +767,24 @@ def order_deal(request, action):
 
     return JsonResponse({'status':'true',"message": "Action Completed successfully."}, status=201)
 
-
-
+@login_required
+def info(request,details):
+    if details=='wallet':
+        try:
+            wallet=Wallet.objects.get(owner=request.user)
+            return JsonResponse({"wallet":wallet.serialize()},safe=False)
+        except:
+            return JsonResponse({'status':'false',"message": "Wallet does not exist!"},status=404)
+    elif details=='list_coin':
+        try:            
+            coins=List_Coin.objects.all().exclude(coin_id='usd')
+            all_coins=List_Coin.objects.all()
+            return JsonResponse({"coins":[coin.coin_id for coin in coins],
+                                 "all_coins":{coin.id:coin.coin_id for coin in all_coins}},safe=False)
+        except:
+            return JsonResponse({'status':'false',"message": "List does not exist!"},status=404)
+            
+        
 
 
 

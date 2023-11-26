@@ -15,6 +15,13 @@ class List_Coin(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.symbol})"
+    
+    def serialize(self):
+        return {
+            "id":self.id,
+            "coin_id":self.coin_id,
+            "title":self.title
+        }
 
 class Coin(models.Model):
     coin=models.ForeignKey(List_Coin,on_delete=models.CASCADE,related_name="purchases")
@@ -30,6 +37,18 @@ class Wallet(models.Model):
 
     def __str__(self):
         return f"{self.owner} has {[coin.coin.symbol for coin in self.coins.all()]}"
+    
+    def serialize(self):
+        usd=List_Coin.objects.get(coin_id='usd')
+        return {
+            "id":self.id,
+            "owner":self.owner.username,
+            "crypto":[coin.coin.coin_id for coin in self.coins.all().exclude(coin=usd)],
+            "all_coins_id":{coin.coin.id:coin.coin.coin_id for coin in self.coins.all()},
+            "all_coins":[coin.coin.coin_id for coin in self.coins.all()],
+            "wallet":{coin.coin.coin_id:coin.current_coin_amount for coin in self.coins.all()}
+        
+        }
 
 class Watchlist(models.Model):
     #user -foreign key

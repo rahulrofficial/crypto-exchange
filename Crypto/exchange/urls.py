@@ -21,5 +21,6 @@ urlpatterns = [
 
 
     #apis
-    path("order_deal/<str:action>", views.order_deal, name="order_deal")
+    path("order_deal/<str:action>", views.order_deal, name="order_deal"),
+    path("info/<str:details>", views.info, name="info")
 ]
