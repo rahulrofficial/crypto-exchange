@@ -44,5 +44,18 @@
 
   
 </div>
+<nav >
+  <ul class="pagination justify-content-center">
+    {% if watchlists.has_previous %}
+    <li  class="page-item"><a id="market_first"  class="page-link" href="?page=1">First</a></li>
+    <li class="page-item"><a id="market_previous" class="page-link" href="?page={{ watchlists.previous_page_number }}">Previous</a></li>
+    {% endif %}
+    <li class="page-item"><a id="market_current" class="page-link" href="?page={{ watchlists.number }}">Page {{ watchlists.number }} of {{ watchlists.paginator.num_pages }}</a></li>
+    {% if watchlists.has_next %}
+    <li class="page-item"><a id="market_next" class="page-link" href="?page={{ watchlists.next_page_number }}">Next</a></li>
+    <li class="page-item"><a id="market_last" class="page-link" href="?page={{ watchlists.paginator.num_pages }}">Last</a></li>
+    {% endif %}
+  </ul>
+</nav>
 
 {% endblock %}

@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 from .models import User, List_Coin, Coin, Wallet, Watchlist, History, Orders, Order_wallet
 from django.db.models import Q
+from django.core.paginator import Paginator
 from django import forms
 import requests
 import json
@@ -171,7 +172,12 @@ def coin_data(request, id):
 
 
 def markets(request):
+    
     coins = List_Coin.objects.all()
+    paginator = Paginator(coins, 25)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    
     try:
         watch = Watchlist.objects.get(watcher=request.user)
         lists=watch.watch_list.all()
@@ -179,7 +185,7 @@ def markets(request):
     except:
         watchlists=[]
 
-    return render(request, 'markets.html', {'coins': coins,'watchlists':watchlists})
+    return render(request, 'markets.html', {'coins': page_obj,'watchlists':watchlists})
 
 
 @login_required
@@ -188,10 +194,13 @@ def wallet(request):
 
         wallet = Wallet.objects.get(owner=request.user)
         coins = wallet.coins.all()
+        paginator = Paginator(coins, 15)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
     except:
         coins = []
 
-    return render(request, 'wallet.html', {'coins': coins})
+    return render(request, 'wallet.html', {'coins': page_obj})
 
 
 @login_required
@@ -444,7 +453,10 @@ def history(request):
 
     history = History.objects.filter(Q(from_user=request.user) | Q(to_user=request.user))
     history = history.order_by("-transaction_on").all()
-    return render(request, 'history.html', {'history': history})
+    paginator = Paginator(history, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'history.html', {'history': page_obj})
 
 
 def transfer(request):
@@ -554,22 +566,31 @@ def watchlist(request):
         watch = Watchlist.objects.get(watcher=request.user)
         
         watchlists=watch.watch_list.all()
+        paginator = Paginator(watchlists, 15)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
     except:
         watchlists=[]
     
-    return render(request, 'watchlist.html', {'watchlists': watchlists})
+    return render(request, 'watchlist.html', {'watchlists': page_obj})
 
 
 def my_orders(request):
     orders = Orders.objects.filter(lister=request.user)
     orders = orders.order_by("-created").all()
-    return render(request, 'my_orders.html', {'orders': orders})
+    paginator = Paginator(orders, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'my_orders.html', {'orders': page_obj})
 
 
 def all_orders(request):
     orders = Orders.objects.all().filter(is_fulfilled=False, is_closed=False)
     orders = orders.order_by("-created").all()
-    return render(request, 'all_orders.html', {'orders': orders})
+    paginator = Paginator(orders, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'all_orders.html', {'orders': page_obj})
 
 
 def create_orders(request):
@@ -847,7 +868,10 @@ def info(request,details):
 def test(request):
 
     coins = List_Coin.objects.all()
+    paginator = Paginator(coins, 25)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
     
 
     
-    return render(request, 'test.html',{'coins':coins})
+    return render(request, 'test.html',{'coins':page_obj})

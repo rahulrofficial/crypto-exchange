@@ -5,28 +5,8 @@
    <div id="history_div">
 
 
-    <h1>History</h1>
-<!--
-<ul>
-        {%for event in history%}
-    
-    <li><h5>{{event}}</h5></li>
-        
-        {%endfor%}
-    transaction_on=models.DateTimeField(default=datetime.datetime.now())
-    to_user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="received")
-    from_user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="send")
-    transacted_coin=models.ForeignKey(List_Coin,on_delete=models.CASCADE,related_name="transacted")
-    transacted_coin_value=models.FloatField()
-    """transacted_amount-number of coins
-    """
-    transacted_amount=models.FloatField(default=0)#number of coins
-    transact_action=models.CharField(max_length=64,blank=True)#Purchased/Sold/Send/
-    
-    </ul>
-       
+    <h1>My History</h1>
 
--->
 <table class="table table-striped">
 <tr>
 
@@ -72,7 +52,19 @@
 
    </div> 
 
-  
+   <nav >
+    <ul class="pagination justify-content-center">
+      {% if history.has_previous %}
+      <li  class="page-item"><a id="market_first"  class="page-link" href="?page=1">First</a></li>
+      <li class="page-item"><a id="market_previous" class="page-link" href="?page={{ history.previous_page_number }}">Previous</a></li>
+      {% endif %}
+      <li class="page-item"><a id="market_current" class="page-link" href="?page={{ history.number }}">Page {{ history.number }} of {{ history.paginator.num_pages }}</a></li>
+      {% if history.has_next %}
+      <li class="page-item"><a id="market_next" class="page-link" href="?page={{ history.next_page_number }}">Next</a></li>
+      <li class="page-item"><a id="market_last" class="page-link" href="?page={{ history.paginator.num_pages }}">Last</a></li>
+      {% endif %}
+    </ul>
+  </nav>
 
    
 
