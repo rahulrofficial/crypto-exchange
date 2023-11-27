@@ -20,7 +20,8 @@ class List_Coin(models.Model):
         return {
             "id":self.id,
             "coin_id":self.coin_id,
-            "title":self.title
+            "title":self.title,
+            "logo_url":self.logo_url
         }
 
 class Coin(models.Model):

@@ -6,10 +6,24 @@
 	<div id="container">
         {%for item in coins%}
         <div class="row">
-      <div class="col-1 mt-2">
-        <a href="{%url 'view_coin' item.coin_id %}">
-          <img src="{{item.logo_url}}" width="50px" alt="" />
-        </a>
+      <div class="col-1 me-2">
+        <div class="col">
+          <a href="{%url 'view_coin' item.coin_id %}">
+            <img src="{{item.logo_url}}" width="50px" alt="" />
+          </a>
+
+        </div>
+        <div class="col">
+          {%if item.coin_id in watchlists%}
+          <a class="badge bg-danger  mt-4" style="text-decoration: none;white-space:normal ;" href="{% url 'remove_watchlist' item.coin_id %}">Remove from watchlist 
+          </a>
+          {%else%}
+          <a class="badge bg-success  mt-4" style="text-decoration: none;white-space:normal ;" href="{% url 'add_watchlist' item.coin_id %}">Add to watchlist 
+            </a>
+           {%endif%}
+        </div>
+      
+       
       </div>
 
       <div class="col-2 ms-5">

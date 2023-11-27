@@ -3,10 +3,17 @@
 
 
 	<h1>
-		<img src="https://cryptologos.cc/logos/{{coin.id}}-{{coin.symbol|lower}}-logo.png" width="60px" alt="" />
-		{{coin.name}} Price
-		<span style="font-size: 20px; color: grey">{{coin.symbol}}</span>
+		<img src="{{coin.logo_url}}" width="60px" alt="" />
+		<span id="view_coin_name">{{coin.title}} Price</span>
+		<span id="view_coin_symbol" style="font-size: 20px; color: grey">{{coin.symbol}}</span>
+		<span style="display: none;" id="view_coin_id">{{coin.coin_id}}</span>
 	</h1>
+	{%if watchlisted %}
+	<a class="badge bg-secondary ms-3" style="text-decoration: none;" >Watchlisted</a>
+	<a class="badge bg-danger" style="text-decoration: none;" href="{% url 'remove_watchlist' coin.coin_id  %}">Remove from Watchlist</a>
+	{%else%}
+	<a class="badge bg-success ms-3" style="text-decoration: none;" href="{% url 'add_watchlist' coin.coin_id  %}">Add to Watchlist</a>
+	{%endif%}
 	<div class="container">
 		<div class="row">
 			<div style="width: 600px; height: 400px;" class="mb-5 col-xs-7 col-sm-8 col-md-6 bg-info">
@@ -17,30 +24,30 @@
 					<table class="table">
 						<tr>
 							<td>Supply</td>
-							<td class="display_detail">{{coin.supply|floatformat:0}}</td>
+							<td id="view_supply" class="display_detail">{{coin.supply|floatformat:0}}</td>
 						</tr>
 						<tr>
 							<td>Max Supply</td>
-							<td class="display_detail">{{coin.maxSupply|floatformat:0}}</td>
+							<td id="view_maxsupply" class="display_detail">{{coin.maxSupply|floatformat:0}}</td>
 						</tr>
 
 						<tr>
 							<td>Market Cap</td>
-							<td class="display_detail">{{coin.marketCapUsd|floatformat:4}}</td>
+							<td  class="display_detail">$<span id="view_market_cap">{{coin.marketCapUsd|floatformat:4}}</span></td>
 						</tr>
 						<tr>
 							<td>Volume Used 24Hr</td>
-							<td class="display_detail">{{coin.volumeUsd24Hr|floatformat:4}}</td>
+							<td id="view_volume_24h" class="display_detail">{{coin.volumeUsd24Hr|floatformat:4}}</td>
 						</tr>
 
 						<tr>
 							<td>Price</td>
-							<td class="display_detail">$ {{coin.priceUsd|floatformat:4}}</td>
+							<td  class="display_detail">$ <span id="view_coin_price">{{coin.priceUsd|floatformat:4}}</span> </td>
 						</tr>
 
 						<tr>
 							<td>Change Percent 24Hr</td>
-							<td class="display_detail">{{coin.changePercent24Hr|floatformat:4}}</td>
+							<td id="view_change_24" class="display_detail">{{coin.changePercent24Hr|floatformat:4}}</td>
 						</tr>
 					</table>
 				</div>

@@ -30,13 +30,16 @@
                         </a>
                             
                 <p>{{item.current_coin_amount|floatformat:4}}</p>
-                {%if item.coin.coin_id == 'usd' %}
-                <p style="font-weight: bold;" >$<span data-amount="{{item.current_coin_amount}}" id="wallet_current_total_amount_{{item.coin.coin_id}}">{{item.current_coin_amount|floatformat:6}}</span></p>
-                {%else%}
-                <p style="font-weight: bold;">$<span data-amount="{{item.current_coin_amount}}" id="wallet_current_total_amount_{{item.coin.coin_id}}"></span></p>
-                {%endif%}
+                
+                    {%if item.coin.coin_id == 'usd' %}
+                    <p style="font-weight: bold;" >$<span data-amount="{{item.current_coin_amount}}" id="wallet_current_total_amount_{{item.coin.coin_id}}">{{item.current_coin_amount|floatformat:6}}</span></p>
+                    {%else%}
+                    <p style="font-weight: bold;">$<span data-amount="{{item.current_coin_amount}}" id="wallet_current_total_amount_{{item.coin.coin_id}}"></span></p>
+                    {%endif%}
+                
             </div>
         </div>
+        
         {%empty%}
         <h4>No Coins Yet</h4>
         {%endfor%}

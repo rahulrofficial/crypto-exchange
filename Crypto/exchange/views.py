@@ -144,20 +144,42 @@ def index(request):
 
 
 def view_coin(request, id):
+    
+    coin=List_Coin.objects.get(coin_id=id)
+    
+    try:
+        watchlists=Watchlist.objects.get(watcher=request.user)
+        watchlisted= coin in watchlists.watch_list.all()
+        print(watchlisted)
+    except:
+        watchlisted=False
+   
+    return render(request, 'view_coin.html', {'coin': coin.serialize(),'watchlisted':watchlisted})
+
+
+def coin_data(request, id):
     if not id == "usd":
         url = f'http://api.coincap.io/v2/assets/{id}'
         res = requests.get(url)
         response = json.loads(res.text)
         coin = response['data']
     else:
-        coin = {'priceUsd': 1, 'symbol': 'usd', 'name': 'US Dollar'}
-    return render(request, 'view_coin.html', {'coin': coin})
+        coin ={'priceUsd': 1, 'symbol': 'USD', 'name': 'US Dollar','id':'usd'}
+
+    return JsonResponse({'coin':coin},safe=False)
+
 
 
 def markets(request):
     coins = List_Coin.objects.all()
+    try:
+        watch = Watchlist.objects.get(watcher=request.user)
+        lists=watch.watch_list.all()
+        watchlists=[coin.coin_id for coin in lists]  
+    except:
+        watchlists=[]
 
-    return render(request, 'markets.html', {'coins': coins})
+    return render(request, 'markets.html', {'coins': coins,'watchlists':watchlists})
 
 
 @login_required
@@ -336,13 +358,18 @@ def buy_sell(request):
                     print('integrity error-User Usd side')
                     raise IntegrityError
             except:
-                return render(request, 'buy_sell.html', {'form': form, 'message': 'Please Create USD Wallet'})
+                user_usd_coin = Coin(
+                    coin=usd_coin)
+                user_usd_coin.save()
+                user_wallet.coins.add(exchange_usd_coin)
+                user_wallet_wallet.save()
+                
 
             try:
                 exchange_usd_coin = exchange_wallet.coins.filter(
                     coin=usd_coin).first()
                 if not exchange_usd_coin:
-                    print('integrity error-User Usd side')
+                    print('integrity error-exchange Usd side')
                     raise IntegrityError
             except:
                 exchange_usd_coin = Coin(
@@ -490,8 +517,9 @@ def transfer(request):
     return render(request, 'transfer.html', {'form': Transfer()})
 
 
+
 @login_required
-def add_to_watchlist(request, id):
+def add_watchlist(request, id):
     # id=coin_id not pk
     coin = List_Coin.objects.get(coin_id=id)
 
@@ -506,12 +534,30 @@ def add_to_watchlist(request, id):
     watch.save()
     return HttpResponseRedirect(reverse("watchlist"))
 
+@login_required
+def remove_watchlist(request, id):
+    # id=coin_id not pk
+    coin = List_Coin.objects.get(coin_id=id)
+
+    try:
+        watch = Watchlist.objects.get(watcher=request.user)
+        watch.watch_list.remove(coin)
+    except:
+        pass
+
+    watch.save()
+    return HttpResponseRedirect(reverse("watchlist"))
+
 
 def watchlist(request):
-
-    watchlists = Watchlist.objects.filter(watcher=request.user)
-
-    return render(request, 'watchlist.html', {'watchlist': watchlists})
+    try:
+        watch = Watchlist.objects.get(watcher=request.user)
+        
+        watchlists=watch.watch_list.all()
+    except:
+        watchlists=[]
+    
+    return render(request, 'watchlist.html', {'watchlists': watchlists})
 
 
 def my_orders(request):
@@ -783,6 +829,16 @@ def info(request,details):
                                  "all_coins":{coin.id:coin.coin_id for coin in all_coins}},safe=False)
         except:
             return JsonResponse({'status':'false',"message": "List does not exist!"},status=404)
+        
+    elif details=='watchlist':
+        try:
+            watch=Watchlist.objects.get(watcher=request.user)
+            watchlist=[coin.coin_id for coin in watch.watch_list.all()]
+            return JsonResponse({"watchlist":watchlist},safe=False)
+        
+        except:
+            return JsonResponse({'status':'false',"message": "List does not exist!"},status=404)
+
             
         
 
