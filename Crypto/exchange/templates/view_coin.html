@@ -8,11 +8,13 @@
 		<span id="view_coin_symbol" style="font-size: 20px; color: grey">{{coin.symbol}}</span>
 		<span style="display: none;" id="view_coin_id">{{coin.coin_id}}</span>
 	</h1>
+	{% if user.is_authenticated %}
 	{%if watchlisted %}
 	<a class="badge bg-secondary ms-3" style="text-decoration: none;" >Watchlisted</a>
 	<a class="badge bg-danger" style="text-decoration: none;" href="{% url 'remove_watchlist' coin.coin_id  %}">Remove from Watchlist</a>
 	{%else%}
 	<a class="badge bg-success ms-3" style="text-decoration: none;" href="{% url 'add_watchlist' coin.coin_id  %}">Add to Watchlist</a>
+	{%endif%}
 	{%endif%}
 	<div class="container">
 		<div class="row">

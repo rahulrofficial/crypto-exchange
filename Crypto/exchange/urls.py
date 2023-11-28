@@ -6,6 +6,7 @@ urlpatterns = [
     path("login", views.login_view, name="login"),
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
+    path("profile", views.profile, name="profile"),
     path("view_coin/<str:id>", views.view_coin, name="view_coin"),
     path("markets", views.markets, name="markets"),
     path("deposit", views.deposit, name="deposit"),

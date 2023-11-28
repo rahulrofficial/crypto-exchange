@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
+{% if user.is_authenticated %}
 <div style="padding:20px;height:400px;" id="buy_sell_div">
     <h2 class="ms-3 mb-2" >Buy/Sell</h2>
 
@@ -15,7 +16,14 @@
         <input id="buy_sell_submit" class="btn btn-primary ms-3" type="submit" value="Action">
     </form>
 </div>
-  
+  {%else%}
+  <div >
+    <h1 style="text-align: center;font-size: 80px;">Want to explore the world of <strong style="color: blue;">Crypto</strong> ?</h1><br>
+    <h3 style="text-align: center;">Please <a href="{%url 'login'%}">Login </a>First</h3>
+  </div>
+
+
+  {%endif%}
 
 
 {% endblock %}

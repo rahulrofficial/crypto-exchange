@@ -1,0 +1,113 @@
+{% extends "layout.html" %}
+{% load static %}
+{% block body %}
+
+    
+<div id="profile_div">
+    <h1 class="ms-2">Profile</h1>
+
+
+    <div  >
+        
+        <div id="prof_container" class="col">
+         
+            <div style="width: 450px;" class="row">
+                <img style=" border-radius: 50%;width: 400px;height: 400px;" 
+                {%if user.profile_url%}
+                src="{{user.profile_url}}"
+                {%else%}
+                src="{% static 'media\blank.png' %}"
+                {%endif%}
+                 alt="">
+                
+                <h3 style="color: blue;">{{user.username}}</h3>
+                <h6>Last login:{{user.last_login}}</h6>
+                
+            </div>
+            
+            <div   class="row" >
+              <div>
+                <table style="width:600px;"  class="table table-striped" id="details_display">
+                    <tr>
+                        <th>Email</th> 
+
+                        <td>{{user.email}}</td>
+                    </tr>
+                    <tr>
+                        <th>First Name</th>
+                        <td>{{user.first_name}}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Name</th>
+                        <td>{{user.last_name}}</td>
+                    </tr>
+                    <tr>
+                        <th>Profile URL</th>
+                        <td>{{user.profile_url}}</td>
+                    </tr>
+                    <tr>
+                        <th>Joined on:</th>
+                        <td>{{user.date_joined}}</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        
+                        <td><button class="btn btn-primary" id="profile_edit_btn">Edit</button></td>
+                    </tr>
+                    
+                </table>
+              </div>
+                    
+             
+                
+                
+                
+                <form id="profile_edit_form" style="display: none;" action="{% url 'profile' %}" method="post">
+                    {% csrf_token %}
+                <div class="form-group">
+                    
+                    <label for="email">E-mail</label>
+                    <input class="form-control" id="email" type="email" name="email" placeholder="Email Address" value="{{user.email}}">
+                </div>
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input class="form-control" id="firstname"  type="text" name="firstname" placeholder="First name" value="{{user.first_name}}">
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input class="form-control" id="lastname"  type="text" name="lastname" placeholder="Last name" value="{{user.last_name}}">
+                </div>
+                <div class="form-group">
+                    <label for="profile">Profile URL</label>
+                    <input class="form-control" type="url" id="profile" placeholder="Profile URL" name="profile_url" value="{{user.profile_url}}">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input class="form-control" id="password"  type="password" name="password" placeholder="Password" >
+                </div>
+                <div class="form-group">
+                    <label for="confirm">Confirm Password</label>
+                    <input class="form-control" id="confirm"  type="password" name="confirmation" placeholder="Confirm Password" >
+                </div>
+                <input id="profile_submit_btn" class="btn btn-primary mt-2" type="submit" value="Change">
+            </form>
+                
+                
+                
+            </div>
+        </div>
+        
+       
+    </div>
+
+
+
+
+</div>
+ 
+
+
+
+
+
+{% endblock %}

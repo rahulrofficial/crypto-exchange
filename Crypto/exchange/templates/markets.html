@@ -14,12 +14,14 @@
 
         </div>
         <div class="col">
+          {% if user.is_authenticated %}
           {%if item.coin_id in watchlists%}
           <a class="badge bg-danger  mt-4" style="text-decoration: none;white-space:normal ;" href="{% url 'remove_watchlist' item.coin_id %}">Remove from watchlist 
           </a>
           {%else%}
           <a class="badge bg-success  mt-4" style="text-decoration: none;white-space:normal ;" href="{% url 'add_watchlist' item.coin_id %}">Add to watchlist 
             </a>
+           {%endif%}
            {%endif%}
         </div>
       

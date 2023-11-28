@@ -25,3 +25,29 @@ body{
 .display_detail{
   font-weight: bold;
 }
+
+#prof_container{
+  display: flex;
+  flex-wrap: wrap;
+  border-style: solid;
+    border-radius: 3px;
+    border-color: lightgrey;
+    width: 1100px;
+    height: 500px;
+    
+    margin: 10px;
+}
+
+#prof_container {
+  
+  
+    border-radius: 3px;
+    border-color: lightgrey;
+    width: 450px;
+   
+}
+#details_display 
+  {
+    table-layout:fixed;
+  
+  }

@@ -187,6 +187,46 @@ def markets(request):
 
     return render(request, 'markets.html', {'coins': page_obj,'watchlists':watchlists})
 
+@login_required
+def profile(request):
+    user = User.objects.get(username=request.user)
+    if request.method == "POST":        
+        email = request.POST["email"]
+        firstname=request.POST["firstname"]
+        lastname=request.POST["lastname"]
+        profile_url=request.POST["profile_url"]
+        # Ensure password matches confirmation
+        password = request.POST["password"]
+        confirmation = request.POST["confirmation"]
+        if password and confirmation:
+            
+            if password != confirmation:
+                return render(request, "register.html", {
+                    "message": "Passwords must match.",'user':user
+                })
+
+        # Attempt to create new user
+        try:
+            if email:
+                user.email=email
+            if firstname:
+                user.first_name=firstname
+            if lastname:
+                user.last_name=lastname
+            if profile_url:
+                user.profile_url=profile_url
+            if password:
+                user.password=password
+            user.save()
+        except IntegrityError:
+            return render(request, "profile.html", {'user':user           
+            })
+        
+        return render(request, 'profile.html',{'user':user,'message':'changed Succesfully'})
+    else:     
+    
+         return render(request, 'profile.html',{'user':user})
+
 
 @login_required
 def wallet(request):
@@ -304,151 +344,154 @@ def register(request):
         return render(request, "register.html")
 
 
-@login_required
+
 def buy_sell(request):
-    exchange_per_reserve = 1000000
-    if request.method == "POST":
-        form = Buy_Sell(request.POST)
+    if not request. user. is_anonymous:
 
-        if form.is_valid():
-            amount = form.cleaned_data['amount']
-            print(form.cleaned_data['coins'])
-            coin_id = int(form.cleaned_data['coins'])
-            action = form.cleaned_data['action']
-            coin=List_Coin.objects.get(pk=coin_id)
-            url = f'http://api.coincap.io/v2/assets/{coin.coin_id}'
-            res = requests.get(url)
-            response = json.loads(res.text)
-            current_coin_price = round(float(response['data']['priceUsd']), 4)
+        exchange_per_reserve = 1000000
+        if request.method == "POST":
+            form = Buy_Sell(request.POST)
 
-            exchange_user = User.objects.get(username='cryptohub')
+            if form.is_valid():
+                amount = form.cleaned_data['amount']
+                print(form.cleaned_data['coins'])
+                coin_id = int(form.cleaned_data['coins'])
+                action = form.cleaned_data['action']
+                coin=List_Coin.objects.get(pk=coin_id)
+                url = f'http://api.coincap.io/v2/assets/{coin.coin_id}'
+                res = requests.get(url)
+                response = json.loads(res.text)
+                current_coin_price = round(float(response['data']['priceUsd']), 4)
 
-            listed_coin = List_Coin.objects.get(pk=coin_id)
-            usd_coin = List_Coin.objects.get(coin_id='usd')
+                exchange_user = User.objects.get(username='cryptohub')
 
-            try:
-                exchange_wallet = Wallet.objects.get(owner=exchange_user)
-            except:
-                exchange_wallet = Wallet(owner=exchange_user)
-                exchange_wallet.save()
+                listed_coin = List_Coin.objects.get(pk=coin_id)
+                usd_coin = List_Coin.objects.get(coin_id='usd')
 
-            try:
-                exchange_coin = exchange_wallet.coins.filter(
-                    coin=listed_coin).first()
-                if not exchange_coin:
-                    print('integrity error')
-                    raise IntegrityError
-            except IntegrityError:
-                current_amount = exchange_per_reserve/current_coin_price
-                exchange_coin = Coin(
-                    coin=listed_coin, current_coin_amount=current_amount)
-                exchange_coin.save()
-                exchange_wallet.coins.add(exchange_coin)
-                exchange_wallet.save()
-            try:
-                user_wallet = Wallet.objects.get(owner=request.user)
-            except:
-                user_wallet = Wallet(owner=request.user)
-                user_wallet.save()
-            try:
-                user_coin = user_wallet.coins.filter(coin=listed_coin).first()
-                if not user_coin:
-                    print('integrity error-User side')
-                    raise IntegrityError
-            except:
-                user_coin = Coin(coin=listed_coin)
-                user_coin.save()
-                user_wallet.coins.add(user_coin)
-                user_wallet.save()
+                try:
+                    exchange_wallet = Wallet.objects.get(owner=exchange_user)
+                except:
+                    exchange_wallet = Wallet(owner=exchange_user)
+                    exchange_wallet.save()
 
-            try:
-                user_usd_coin = user_wallet.coins.filter(coin=usd_coin).first()
-                if not user_usd_coin:
-                    print('integrity error-User Usd side')
-                    raise IntegrityError
-            except:
-                user_usd_coin = Coin(
-                    coin=usd_coin)
-                user_usd_coin.save()
-                user_wallet.coins.add(exchange_usd_coin)
-                user_wallet_wallet.save()
-                
+                try:
+                    exchange_coin = exchange_wallet.coins.filter(
+                        coin=listed_coin).first()
+                    if not exchange_coin:
+                        print('integrity error')
+                        raise IntegrityError
+                except IntegrityError:
+                    current_amount = exchange_per_reserve/current_coin_price
+                    exchange_coin = Coin(
+                        coin=listed_coin, current_coin_amount=current_amount)
+                    exchange_coin.save()
+                    exchange_wallet.coins.add(exchange_coin)
+                    exchange_wallet.save()
+                try:
+                    user_wallet = Wallet.objects.get(owner=request.user)
+                except:
+                    user_wallet = Wallet(owner=request.user)
+                    user_wallet.save()
+                try:
+                    user_coin = user_wallet.coins.filter(coin=listed_coin).first()
+                    if not user_coin:
+                        print('integrity error-User side')
+                        raise IntegrityError
+                except:
+                    user_coin = Coin(coin=listed_coin)
+                    user_coin.save()
+                    user_wallet.coins.add(user_coin)
+                    user_wallet.save()
 
-            try:
-                exchange_usd_coin = exchange_wallet.coins.filter(
-                    coin=usd_coin).first()
-                if not exchange_usd_coin:
-                    print('integrity error-exchange Usd side')
-                    raise IntegrityError
-            except:
-                exchange_usd_coin = Coin(
-                    coin=usd_coin, current_coin_amount=exchange_per_reserve)
-                exchange_usd_coin.save()
-                exchange_wallet.coins.add(exchange_usd_coin)
-                exchange_wallet.save()
-            required_amount = amount*current_coin_price
-            if action == 'buy':
+                try:
+                    user_usd_coin = user_wallet.coins.filter(coin=usd_coin).first()
+                    if not user_usd_coin:
+                        print('integrity error-User Usd side')
+                        raise IntegrityError
+                except:
+                    user_usd_coin = Coin(
+                        coin=usd_coin)
+                    user_usd_coin.save()
+                    user_wallet.coins.add(exchange_usd_coin)
+                    user_wallet.save()
+                    
 
-                if user_usd_coin.current_coin_amount < required_amount:
-                    return render(request, 'buy_sell.html', {'form': form, 'message': 'Insufficent (USD) Funds'})
+                try:
+                    exchange_usd_coin = exchange_wallet.coins.filter(
+                        coin=usd_coin).first()
+                    if not exchange_usd_coin:
+                        print('integrity error-exchange Usd side')
+                        raise IntegrityError
+                except:
+                    exchange_usd_coin = Coin(
+                        coin=usd_coin, current_coin_amount=exchange_per_reserve)
+                    exchange_usd_coin.save()
+                    exchange_wallet.coins.add(exchange_usd_coin)
+                    exchange_wallet.save()
+                required_amount = amount*current_coin_price
+                if action == 'buy':
 
-                if exchange_coin.current_coin_amount < amount:
-                    return render(request, 'buy_sell.html', {'form': form, 'message': 'Insufficent Coins at Exchange'})
+                    if user_usd_coin.current_coin_amount < required_amount:
+                        return render(request, 'buy_sell.html', {'form': form, 'message': 'Insufficent (USD) Funds'})
 
-                user_usd_coin.current_coin_amount -= required_amount
-                exchange_usd_coin.current_coin_amount += required_amount
-                exchange_coin.current_coin_amount -= amount
-                user_coin.current_coin_amount += amount
-                user_usd_coin.save()
-                exchange_usd_coin.save()
-                user_coin.save()
-                exchange_coin.save()
-                user_wallet.save()
-                exchange_wallet.save()
+                    if exchange_coin.current_coin_amount < amount:
+                        return render(request, 'buy_sell.html', {'form': form, 'message': 'Insufficent Coins at Exchange'})
 
-                history = History(
-                    to_user=request.user,
-                    from_user=exchange_user,
-                    transacted_coin=listed_coin,
-                    transacted_coin_value=current_coin_price,
-                    transacted_amount=amount,
-                    transact_action='Sold'
-                )
-                history.save()
+                    user_usd_coin.current_coin_amount -= required_amount
+                    exchange_usd_coin.current_coin_amount += required_amount
+                    exchange_coin.current_coin_amount -= amount
+                    user_coin.current_coin_amount += amount
+                    user_usd_coin.save()
+                    exchange_usd_coin.save()
+                    user_coin.save()
+                    exchange_coin.save()
+                    user_wallet.save()
+                    exchange_wallet.save()
 
-                return HttpResponseRedirect(reverse("wallet"))
-            else:  # user selling coins to Exchange
-                if exchange_usd_coin.current_coin_amount < required_amount:
-                    return render(request, 'buy_sell.html', {'form': form, 'message': 'Insufficent Funds (USD) at Exchange'})
+                    history = History(
+                        to_user=request.user,
+                        from_user=exchange_user,
+                        transacted_coin=listed_coin,
+                        transacted_coin_value=current_coin_price,
+                        transacted_amount=amount,
+                        transact_action='Sold'
+                    )
+                    history.save()
 
-                if user_coin.current_coin_amount < amount:
-                    return render(request, 'buy_sell.html', {'form': form, 'message': 'Insufficent Coins'})
+                    return HttpResponseRedirect(reverse("wallet"))
+                else:  # user selling coins to Exchange
+                    if exchange_usd_coin.current_coin_amount < required_amount:
+                        return render(request, 'buy_sell.html', {'form': form, 'message': 'Insufficent Funds (USD) at Exchange'})
 
-                exchange_usd_coin.current_coin_amount -= required_amount
-                user_usd_coin.current_coin_amount += required_amount
-                user_coin.current_coin_amount -= amount
-                exchange_coin.current_coin_amount += amount
-                user_usd_coin.save()
-                exchange_usd_coin.save()
-                user_coin.save()
-                exchange_coin.save()
-                user_wallet.save()
-                exchange_wallet.save()
+                    if user_coin.current_coin_amount < amount:
+                        return render(request, 'buy_sell.html', {'form': form, 'message': 'Insufficent Coins'})
 
-                history = History(
-                    to_user=exchange_user,
-                    from_user=request.user,
-                    transacted_coin=listed_coin,
-                    transacted_coin_value=current_coin_price,
-                    transacted_amount=amount,
-                    transact_action='Sold'
-                )
-                history.save()
-                return HttpResponseRedirect(reverse("wallet"))
+                    exchange_usd_coin.current_coin_amount -= required_amount
+                    user_usd_coin.current_coin_amount += required_amount
+                    user_coin.current_coin_amount -= amount
+                    exchange_coin.current_coin_amount += amount
+                    user_usd_coin.save()
+                    exchange_usd_coin.save()
+                    user_coin.save()
+                    exchange_coin.save()
+                    user_wallet.save()
+                    exchange_wallet.save()
+
+                    history = History(
+                        to_user=exchange_user,
+                        from_user=request.user,
+                        transacted_coin=listed_coin,
+                        transacted_coin_value=current_coin_price,
+                        transacted_amount=amount,
+                        transact_action='Sold'
+                    )
+                    history.save()
+                    return HttpResponseRedirect(reverse("wallet"))
+    
 
     return render(request, 'buy_sell.html', {'form': Buy_Sell()})
 
-
+@login_required
 def history(request):
 
     history = History.objects.filter(Q(from_user=request.user) | Q(to_user=request.user))
@@ -458,7 +501,7 @@ def history(request):
     page_obj = paginator.get_page(page_number)
     return render(request, 'history.html', {'history': page_obj})
 
-
+@login_required
 def transfer(request):
     if request.method == "POST":
         form = Transfer(request.POST)
@@ -834,14 +877,17 @@ def order_deal(request, action):
 
     return JsonResponse({'status':'true',"message": "Action Completed successfully."}, status=201)
 
-@login_required
+
 def info(request,details):
     if details=='wallet':
-        try:
-            wallet=Wallet.objects.get(owner=request.user)
-            return JsonResponse({"wallet":wallet.serialize()},safe=False)
-        except:
-            return JsonResponse({'status':'false',"message": "Wallet does not exist!"},status=404)
+        if not request. user. is_anonymous:
+            try:
+                wallet=Wallet.objects.get(owner=request.user)
+                return JsonResponse({"wallet":wallet.serialize()},safe=False)
+            except:
+                return JsonResponse({'status':'false',"message": "Wallet does not exist!"},status=404)
+        else:
+            return JsonResponse({'status':'false',"message": "Please log in!"},status=404)
     elif details=='list_coin':
         try:            
             coins=List_Coin.objects.all().exclude(coin_id='usd')
@@ -852,13 +898,17 @@ def info(request,details):
             return JsonResponse({'status':'false',"message": "List does not exist!"},status=404)
         
     elif details=='watchlist':
-        try:
-            watch=Watchlist.objects.get(watcher=request.user)
-            watchlist=[coin.coin_id for coin in watch.watch_list.all()]
-            return JsonResponse({"watchlist":watchlist},safe=False)
-        
-        except:
-            return JsonResponse({'status':'false',"message": "List does not exist!"},status=404)
+        if not request. user. is_anonymous:
+
+            try:
+                watch=Watchlist.objects.get(watcher=request.user)
+                watchlist=[coin.coin_id for coin in watch.watch_list.all()]
+                return JsonResponse({"watchlist":watchlist},safe=False)
+            
+            except:
+                return JsonResponse({'status':'false',"message": "List does not exist!"},status=404)
+        else:
+            return JsonResponse({'status':'false',"message": "Please log in!"},status=404)
 
             
         
@@ -867,11 +917,15 @@ def info(request,details):
 
 def test(request):
 
-    coins = List_Coin.objects.all()
-    paginator = Paginator(coins, 25)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    user = User.objects.get(username=request.user)
+    print(user.username)
+    print(user.email)
+    print(user.first_name)
+    print(user.last_name)
+    print(user.last_login)
+    print(user.date_joined)
+    
     
 
     
-    return render(request, 'test.html',{'coins':page_obj})
+    return render(request, 'test.html')

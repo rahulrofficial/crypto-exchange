@@ -242,6 +242,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					var coins = data.coins.join(",");
 
 					function update_market_price() {
+						
 						fetch(`https://api.coincap.io/v2/assets?ids=${coins}`)
 							.then((response) => response.json())
 							.then((data) => {
@@ -456,4 +457,23 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				setInterval(update_market_price, 2000);
 			});
 	}
+
+		if (document.querySelector("#profile_div")){
+
+			document.querySelector("#profile_edit_btn").addEventListener('click',()=>{
+				document.querySelector("#profile_edit_form").style.display='block'
+				document.querySelector("#details_display").style.display='none'
+			})
+			document.querySelector("#profile_submit_btn").addEventListener('click',()=>{
+				document.querySelector("#profile_edit_form").style.display='none'
+				document.querySelector("#details_display").style.display='block'
+			})
+
+		}
+
+
+
+
+
+
 });

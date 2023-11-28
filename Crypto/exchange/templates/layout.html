@@ -2,141 +2,189 @@
 
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Crypto Hub</title>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-			integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-			crossorigin="anonymous" />
-		<link rel="stylesheet" href="{% static 'style.css'%}" />
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-		<script src="{% static 'exchange.js' %}"></script>
-	</head>
-	<body>
-		<nav class="navbar navbar-expand-sm bg-primary navbar-dark">
-			<div class="container-fluid m-2">
-				<a class="navbar-brand" href="{%url 'index'%}">
-					<img
-						src="{% static 'media\cryptohub.png'%}"
-						alt="Crypto Hub"
-						width="50px"
-						class="rounded-pill"
-						\ />
-					<strong>CryptoHub</strong>
-				</a>
-				<button
-					class="navbar-toggler"
-					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#collapsibleNavbar">
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="collapsibleNavbar">
-					<ul class="navbar-nav">
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'buy_sell' %}">Buy/Sell Crypto</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{%url 'markets'%}">Markets</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link bg-danger" href="{%url 'test'%}">Test</a>
-						</li>
-						{% if user.is_authenticated %}
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'deposit' %}">Deposit</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'create_orders' %}">Create an Order</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'all_orders' %}">All Orders</a>
-						</li>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Crypto Hub</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="{% static 'style.css'%}" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'exchange.js' %}"></script>
+  </head>
 
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'history' %}">History</a>
-						</li>
+  <body>
+    <nav class="navbar navbar-expand-sm bg-primary navbar-dark">
+      <div class="container-fluid m-2">
+        <a class="navbar-brand" href="{%url 'index'%}">
+          <img
+            src="{% static 'media\cryptohub.png'%}"
+            alt="Crypto Hub"
+            width="50px"
+            class="rounded-pill"
+            \
+          />
+          <strong>CryptoHub</strong>
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapsibleNavbar"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'buy_sell' %}"
+                >Buy/Sell Crypto</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{%url 'markets'%}">Markets</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link bg-danger" href="{%url 'test'%}">Test</a>
+            </li>
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'deposit' %}">Deposit</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'watchlist' %}">Watchlist</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'create_orders' %}"
+                >Create an Order</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'all_orders' %}">All Orders</a>
+            </li>
 
-						{%endif%}
-					</ul>
-				</div>
-				<div
-					class="collapse navbar-collapse justify-content-end"
-					id="collapsibleNavbar">
-					<ul class="navbar-nav">
-						{% if user.is_authenticated %}
-						<li class="nav-item dropdown me-2">
-							<a
-								class="nav-link dropdown-toggle"
-								href="#"
-								role="button"
-								data-bs-toggle="dropdown"
-								><h4>
-									<strong style="color: black">{{user.username}}</strong>
-								</h4></a
-							>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'history' %}">History</a>
+            </li>
 
-							<ul class="dropdown-menu">
-								<li><a class="dropdown-item" href="#">Profile</a></li>
-								<li>
-									<a class="dropdown-item" href="{% url 'wallet' %}">Wallet</a>
-								</li>
-								<li>
-									<a class="dropdown-item" href="{% url 'buy_sell' %}"
-										>Buy/Sell</a
-									>
-								</li>
-								<li>
-									<a class="dropdown-item" href="{% url 'transfer' %}"
-										>Transfer</a
-									>
-								</li>
-								<li>
-									<a class="dropdown-item" href="{% url 'my_orders' %}"
-										>My Orders</a
-									>
-								</li>
-							</ul>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{%url 'logout'%}">Log Out</a>
-						</li>
-						{%else%}
-						<li class="nav-item">
-							<a class="nav-link" href="{%url 'register'%}"
-								><strong style="color: yellow">Guest</strong></a
-							>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{%url 'login'%}">Login</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="{%url 'register'%}">Register</a>
-						</li>
-						{%endif%}
-					</ul>
-				</div>
-			</div>
-		</nav>
-		<div class="m-5">
-			{% if message %}
-			<div id="message_display" class="alert alert-warning alert-dismissible fade show" role="alert">
-				{{message}}
-				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-			  </div>
-			{% endif %} 
-			<div id="message_display" style="display: none;" class="alert alert-warning alert-dismissible fade show" role="alert">
-				<span id="message_content"></span>
-				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-			  </div>
-			
-			{% block body %} {% endblock %}
-		</div>
-	</body>
+            {%endif%}
+          </ul>
+        </div>
+        <div
+          class="collapse navbar-collapse justify-content-end"
+          id="collapsibleNavbar"
+        >
+          <ul class="navbar-nav">
+            {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link" href="{%url 'profile'%}">
+                <img
+                  style="width: 60px; height: 60px"
+                  {%if user.profile_url %}
+                  src="{{user.profile_url}}"
+                  {%else%}
+                  src="{% static 'media\blank.png' %}"
+                  {%endif%}
+                  alt="..."
+                  class="img-thumbnail"
+                />
+              </a>
+            </li>
+            <li class="nav-item dropdown me-2">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+              >
+                <h5>
+                  <strong style="color: black">{{user.username}}</strong>
+                  <p style="font-size: 15px">{{user.email}}</p>
+                </h5>
+              </a>
+
+              <ul class="dropdown-menu">
+                <li>
+                  <a class="dropdown-item" href="{% url 'profile' %}"
+                    >Profile</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'wallet' %}">Wallet</a>
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'buy_sell' %}"
+                    >Buy/Sell</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'transfer' %}"
+                    >Transfer</a
+                  >
+                </li>
+                <li>
+                  <a class="dropdown-item" href="{% url 'my_orders' %}"
+                    >My Orders</a
+                  >
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{%url 'logout'%}">Log Out</a>
+            </li>
+            {%else%}
+            <li class="nav-item">
+              <a class="nav-link" href="{%url 'register'%}"
+                ><strong style="color: yellow">Guest</strong></a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{%url 'login'%}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{%url 'register'%}">Register</a>
+            </li>
+            {%endif%}
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="m-5">
+      {% if message %}
+      <div
+        id="message_display"
+        class="alert alert-warning alert-dismissible fade show"
+        role="alert"
+      >
+        {{message}}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endif %}
+      <div
+        id="message_display"
+        style="display: none"
+        class="alert alert-warning alert-dismissible fade show"
+        role="alert"
+      >
+        <span id="message_content"></span>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      {% block body %} {% endblock %}
+    </div>
+  </body>
 </html>

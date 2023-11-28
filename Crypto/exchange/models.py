@@ -4,7 +4,7 @@ import datetime
 
 # Create your models here.
 class User(AbstractUser):
-    pass
+    profile_url=models.URLField(blank=True)
 
 class List_Coin(models.Model):
     coin_id=models.CharField(max_length=64,unique=True)
