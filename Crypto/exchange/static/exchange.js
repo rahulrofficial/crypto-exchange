@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 													if (
 														amount_val >
 														data.wallet.wallet[
-															list_coin.all_coins[coin_list.value]
+														list_coin.all_coins[coin_list.value]
 														]
 													) {
 														exp_amount = "Not enough Coins";
@@ -229,53 +229,50 @@ document.addEventListener("DOMContentLoaded", function (event) {
 	}
 
 	if (document.querySelector("#markets_div")) {
-		
-			if (document.querySelector(`#market_current_price_usd`)) {
-				document.querySelector(
-					`#market_current_price_usd`
-				).innerHTML = `1.000000`;
-			}
+		if (document.querySelector(`#market_current_price_usd`)) {
+			document.querySelector(
+				`#market_current_price_usd`
+			).innerHTML = `1.000000`;
+		}
 
-			fetch("/info/list_coin")
-				.then((response) => response.json())
-				.then((data) => {
-					var coins = data.coins.join(",");
+		fetch("/info/list_coin")
+			.then((response) => response.json())
+			.then((data) => {
+				var coins = data.coins.join(",");
 
-					function update_market_price() {
-						
-						fetch(`https://api.coincap.io/v2/assets?ids=${coins}`)
-							.then((response) => response.json())
-							.then((data) => {
-								data.data.forEach((coin) => {
-									let price = parseFloat(coin.priceUsd);
+				function update_market_price() {
+					fetch(`https://api.coincap.io/v2/assets?ids=${coins}`)
+						.then((response) => response.json())
+						.then((data) => {
+							data.data.forEach((coin) => {
+								let price = parseFloat(coin.priceUsd);
 
-									if (
+								if (
+									document.querySelector(`#market_current_price_${coin.id}`)
+								) {
+									let prev_value = parseFloat(
 										document.querySelector(`#market_current_price_${coin.id}`)
-									) {
-										let prev_value = parseFloat(
-											document.querySelector(`#market_current_price_${coin.id}`)
-												.innerHTML
-										);
-										if (prev_value < price) {
-											document.querySelector(
-												`#market_current_price_${coin.id}`
-											).style.color = "green";
-										} else {
-											document.querySelector(
-												`#market_current_price_${coin.id}`
-											).style.color = "red";
-										}
+											.innerHTML
+									);
+									if (prev_value < price) {
 										document.querySelector(
 											`#market_current_price_${coin.id}`
-										).innerHTML = `${price.toFixed(9)}`;
+										).style.color = "green";
+									} else {
+										document.querySelector(
+											`#market_current_price_${coin.id}`
+										).style.color = "red";
 									}
-								});
+									document.querySelector(
+										`#market_current_price_${coin.id}`
+									).innerHTML = `${price.toFixed(9)}`;
+								}
 							});
-					}
+						});
+				}
 
-					setInterval(update_market_price, 2000);
-				});
-		
+				setInterval(update_market_price, 2000);
+			});
 	}
 
 	if (document.querySelector("#index_div")) {
@@ -367,6 +364,33 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		view_supply = document.querySelector("#view_supply");
 		view_maxsupply = document.querySelector("#view_maxsupply");
 		view_coin_symbol = document.querySelector("#view_coin_symbol");
+		fetch(`/price_history/${coin_id.innerHTML}/d1`)
+			.then((response) => response.json())
+			.then((values) => {
+				var xArray = values.time;
+				var yArray = values.priceUsd;
+				var coin_name=values.name
+				// Define Data
+				const data = [
+					{
+						x: xArray,
+						y: yArray,
+						mode: "lines",
+					},
+				];
+
+				// Define Layout
+				const layout = {autosize: false,
+					width: 900,
+					height: 600,
+					xaxis: { title: "Date" },
+					yaxis: { title: "Price" },
+					title: `${coin_name} Prices`,
+				};
+
+				// Display using Plotly
+				Plotly.newPlot("myPlot", data, layout);
+			});
 
 		function repeat_view_price() {
 			console.log(coin_id.innerHTML);
@@ -381,14 +405,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
 					view_supply.innerHTML = parseFloat(coin.coin.supply).toFixed(4);
 					view_maxsupply.innerHTML = parseFloat(coin.coin.maxSupply).toFixed(4);
 					view_market_cap.innerHTML = parseFloat(
-						coin.coin.marketCapUsd
-					).toFixed(4);
-					view_volume_24h.innerHTML = parseFloat(
-						coin.coin.volumeUsd24Hr
-					).toFixed(4);
-					view_change_24.innerHTML = parseFloat(
-						coin.coin.changePercent24Hr
-					).toFixed(4);
+						coin.coin.marketCapUsd).toFixed(4);
+					view_volume_24h.innerHTML = parseFloat(coin.coin.volumeUsd24Hr).toFixed(4);
+					view_change_24.innerHTML = parseFloat(coin.coin.changePercent24Hr).toFixed(4);
 					var curent_price = parseFloat(coin.coin.priceUsd).toFixed(8);
 					coin_price.innerHTML = curent_price;
 					if (curent_price > prev_price) {
@@ -402,17 +421,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		}
 
 		setInterval(repeat_view_price, 2000);
-		document
-			.querySelector("#add_watch_btn")
-			.addEventListener("click", (event) => {
-				alert("Add");
-			});
-
-		document
-			.querySelector("#remove_watch_btn")
-			.addEventListener("click", (event) => {
-				alert("Remove");
-			});
+		
 	}
 
 	if (document.querySelector("#watchlist_div")) {
@@ -458,22 +467,22 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			});
 	}
 
-		if (document.querySelector("#profile_div")){
+	if (document.querySelector("#profile_div")) {
+		document
+			.querySelector("#profile_edit_btn")
+			.addEventListener("click", () => {
+				document.querySelector("#profile_edit_form").style.display = "block";
+				document.querySelector("#details_display").style.display = "none";
+			});
+		document
+			.querySelector("#profile_submit_btn")
+			.addEventListener("click", () => {
+				document.querySelector("#profile_edit_form").style.display = "none";
+				document.querySelector("#details_display").style.display = "block";
+			});
+	}
 
-			document.querySelector("#profile_edit_btn").addEventListener('click',()=>{
-				document.querySelector("#profile_edit_form").style.display='block'
-				document.querySelector("#details_display").style.display='none'
-			})
-			document.querySelector("#profile_submit_btn").addEventListener('click',()=>{
-				document.querySelector("#profile_edit_form").style.display='none'
-				document.querySelector("#details_display").style.display='block'
-			})
+	if (document.querySelector("#test_div")) {
 
-		}
-
-
-
-
-
-
+	}
 });

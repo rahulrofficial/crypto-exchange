@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 from .models import User, List_Coin, Coin, Wallet, Watchlist, History, Orders, Order_wallet
 from django.db.models import Q
+from django.contrib.auth.hashers import make_password
 from django.core.paginator import Paginator
 from django import forms
 import requests
@@ -207,22 +208,23 @@ def profile(request):
 
         # Attempt to create new user
         try:
-            if email:
+            if email and (not email == user.email):
                 user.email=email
-            if firstname:
+            if firstname and (not firstname == user.first_name):
                 user.first_name=firstname
-            if lastname:
+            if lastname and (not lastname==user.last_name):
                 user.last_name=lastname
-            if profile_url:
+            if profile_url and (not profile_url==user.profile_url):
                 user.profile_url=profile_url
             if password:
+                password=make_password(password,hasher='default')
                 user.password=password
             user.save()
         except IntegrityError:
             return render(request, "profile.html", {'user':user           
             })
         
-        return render(request, 'profile.html',{'user':user,'message':'changed Succesfully'})
+        return render(request, 'profile.html',{'user':user,'message':'Saved Succesfully'})
     else:     
     
          return render(request, 'profile.html',{'user':user})
@@ -911,19 +913,33 @@ def info(request,details):
             return JsonResponse({'status':'false',"message": "Please log in!"},status=404)
 
             
-        
+def price_history(request,**values):
+    import datetime
+    id=values['id']
+    period=values['period']
+    print(id,period)
+    list_coin=List_Coin.objects.get(coin_id=id)
+    
+    url = f'https://api.coincap.io/v2/assets/{id}/history?interval={period}'
+    res = requests.get(url)
+    response = json.loads(res.text)
+    coin = response['data']
+    priceUsd=[]
+    time=[]
+    for item in coin:
+        priceUsd.append(float(item['priceUsd']))
+        time.append(item['date'].replace('T',' ').replace('.000Z',''))
+
+    
+    return JsonResponse({'priceUsd':priceUsd,'time':time,'name':list_coin.title,'period':period},safe=False)     
 
 
 
 def test(request):
 
-    user = User.objects.get(username=request.user)
-    print(user.username)
-    print(user.email)
-    print(user.first_name)
-    print(user.last_name)
-    print(user.last_login)
-    print(user.date_joined)
+    
+
+
     
     
 

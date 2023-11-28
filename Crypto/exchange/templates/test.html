@@ -3,73 +3,13 @@
 <div id="test_div">
   <h2>Test</h2>
 
-  <div id="container">
-        {%for item in coins%}
-        <div class="row">
-      <div class="col-1 mt-2">
-        <a href="{%url 'view_coin' item.coin_id %}">
-          <img src="{{item.logo_url}}" width="50px" alt="" />
-        </a>
-      </div>
-
-      <div class="col-2 ms-5">
-        <a
-          style="text-decoration: none; color: black"
-          href="{%url 'view_coin' item.coin_id %}"
-          ><h4 style="padding: 5px 0; text-align: left">{{item.symbol}}</h4>
-          <h5 style="color: grey">{{item.title}}</h5>
-        </a>
-        {%if item.symbol == 'usd' %}
-        <p id="market_current_price_{{item.coin_id}}">
-          $ 1.0000000
-        </p>
-        {%else%}
-        <p style="font-weight: bold;" >$<span id="market_current_price_{{item.coin_id}}">{{item.priceUsd|floatformat:4}}</span>
-            
-          </p>
-        {%endif%}
-      </div>
-       </div>
-
-          {%endfor%}
-  </div>
+  <div  style="width:100%;width: 800px;height: 500px;"></div>
 
 
   
 
 </div>
-<!--
-<div class="pagination">
-  <span class="page-item">
-      {% if coins.has_previous %}
-          <a class="page-link" href="?page=1">&laquo; first</a>
-          <a class="page-link" href="?page={{ coins.previous_page_number }}">previous</a>
-      {% endif %}
 
-      <span class="page-link">
-          Page {{ coins.number }} of {{ coins.paginator.num_pages }}.
-      </span>
 
-      {% if coins.has_next %}
-          <a class="page-link" href="?page={{ coins.next_page_number }}">next</a>
-          <a class="page-link" href="?page={{ coins.paginator.num_pages }}">last &raquo;</a>
-      {% endif %}
-  </span>
-</div>
-
--->
-<nav >
-  <ul class="pagination justify-content-center">
-    {% if coins.has_previous %}
-    <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
-    <li class="page-item"><a class="page-link" href="?page={{ coins.previous_page_number }}">Previous</a></li>
-    {% endif %}
-    <li class="page-item"><a class="page-link" href="?page={{ coins.number }}">Page {{ coins.number }} of {{ coins.paginator.num_pages }}</a></li>
-    {% if coins.has_next %}
-    <li class="page-item"><a class="page-link" href="?page={{ coins.next_page_number }}">Next</a></li>
-    <li class="page-item"><a class="page-link" href="?page={{ coins.paginator.num_pages }}">Last</a></li>
-    {% endif %}
-  </ul>
-</nav>
 
 {% endblock %}

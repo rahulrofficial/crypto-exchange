@@ -1,53 +1,42 @@
-body{
-  font-family: 'Courier New', Courier, monospace 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+body {
+  font-family: "Courier New", Courier, monospace "Segoe UI", Tahoma, Geneva,
+    Verdana, sans-serif;
 }
 
-
-.row{
+.row {
   padding: 5px;
-  
-} 
-  
-  #container {
-    display: flex;
-    flex-wrap: wrap;
 }
 
-#container > div {
-    border-style: solid;
-    border-radius: 3px;
-    border-color: lightgrey;
-    
-    margin: 10px;
-    width: 260px;
+#container {
+  display: flex;
+  flex-wrap: wrap;
 }
 
-.display_detail{
+#container>div {
+  border-style: solid;
+  border-radius: 3px;
+  border-color: lightgrey;
+
+  margin: 10px;
+  width: 260px;
+}
+#container1 {
+  display: flex;
+  flex-wrap: wrap;
+  
+}
+
+
+.display_detail {
   font-weight: bold;
 }
 
-#prof_container{
+#prof_container {
   display: flex;
   flex-wrap: wrap;
-  border-style: solid;
-    border-radius: 3px;
-    border-color: lightgrey;
-    width: 1100px;
-    height: 500px;
-    
-    margin: 10px;
-}
 
-#prof_container {
-  
-  
-    border-radius: 3px;
-    border-color: lightgrey;
-    width: 450px;
-   
+  border-radius: 3px;
+  border-color: lightgrey;
+
+  height: 500px;
 }
-#details_display 
-  {
-    table-layout:fixed;
-  
-  }
