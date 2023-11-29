@@ -311,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			.then((response) => response.json())
 			.then((data) => {
 				var coins = data.wallet.crypto.join(",");
-
+				console.log(coins)
 				function update_market_price() {
 					fetch(`https://api.coincap.io/v2/assets?ids=${coins}`)
 						.then((response) => response.json())
@@ -364,7 +364,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		view_supply = document.querySelector("#view_supply");
 		view_maxsupply = document.querySelector("#view_maxsupply");
 		view_coin_symbol = document.querySelector("#view_coin_symbol");
-		fetch(`/price_history/${coin_id.innerHTML}/d1`)
+		period=document.querySelector("#select_period");
+		function graph(){
+			fetch(`/price_history/${coin_id.innerHTML}/${period.value}`)
 			.then((response) => response.json())
 			.then((values) => {
 				var xArray = values.time;
@@ -383,7 +385,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				const layout = {autosize: false,
 					width: 900,
 					height: 600,
-					xaxis: { title: "Date" },
+					xaxis: { title: "Time" },
 					yaxis: { title: "Price" },
 					title: `${coin_name} Prices`,
 				};
@@ -392,6 +394,35 @@ document.addEventListener("DOMContentLoaded", function (event) {
 				Plotly.newPlot("myPlot", data, layout);
 			});
 
+		}
+		graph()
+		period.addEventListener('change',()=>{
+			if (timer){
+				clearInterval(timer)
+			}
+			if (period.value=='d1'){
+				var time=86400000
+			}else if (period.value=='h12'){
+				var time=43200000
+			}else if (period.value=='h6'){
+				var time=21600000
+			}else if (period.value=='h2'){
+				var time=7200000
+			}else if (period.value=='h1'){
+				var time=3600000
+			}else if (period.value=='m30'){
+				var time=1800000
+			}else if (period.value=='m15'){
+				var time=900000
+			}else if (period.value=='m5'){
+				var time=300000
+			}else if (period.value=='m1'){
+				var time=60000
+			}
+			graph()
+			var timer=setInterval(graph,time)
+		})
+		
 		function repeat_view_price() {
 			console.log(coin_id.innerHTML);
 			fetch(`/coin_data/${coin_id.innerHTML}`)
@@ -482,7 +513,5 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			});
 	}
 
-	if (document.querySelector("#test_div")) {
-
-	}
+	
 });

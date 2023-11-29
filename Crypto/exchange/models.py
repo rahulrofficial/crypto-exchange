@@ -81,9 +81,9 @@ class Orders(models.Model):
     is_buy=models.BooleanField(default=True)
     created=models.DateTimeField(default=datetime.datetime.now())
     is_fulfilled=models.BooleanField(default=False)
-    fulfilled_on=models.DateTimeField(null=True)
+    
     is_closed=models.BooleanField(default=False)#is lister closed the order    
-    closed_on=models.DateTimeField(null=True)
+    closed_fullfilled_on=models.DateTimeField(null=True)
     
     
     def __str__(self):

@@ -133,7 +133,8 @@ class Create_orders(forms.Form):
     action = forms.ChoiceField(label=False, widget=forms.RadioSelect( attrs={"class": "form-check-inline mb-2 ms-2","id":"order_radio_btn"}), choices=(
         ('buy', 'Buy Order'), ('sell', 'Sell Order')))
 
-
+        
+ 
 # Create your views here.
 
 def index(request):
@@ -146,8 +147,11 @@ def index(request):
 
 
 def view_coin(request, id):
-    
-    coin=List_Coin.objects.get(coin_id=id)
+    try:
+        coin=List_Coin.objects.get(coin_id=id)
+        coin=coin.serialize()
+    except:
+        coin=[]
     
     try:
         watchlists=Watchlist.objects.get(watcher=request.user)
@@ -156,7 +160,7 @@ def view_coin(request, id):
     except:
         watchlisted=False
    
-    return render(request, 'view_coin.html', {'coin': coin.serialize(),'watchlisted':watchlisted})
+    return render(request, 'view_coin.html', {'coin': coin,'watchlisted':watchlisted})
 
 
 def coin_data(request, id):
@@ -240,7 +244,7 @@ def wallet(request):
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
     except:
-        coins = []
+        page_obj = []
 
     return render(request, 'wallet.html', {'coins': page_obj})
 
@@ -495,12 +499,15 @@ def buy_sell(request):
 
 @login_required
 def history(request):
+    try:
 
-    history = History.objects.filter(Q(from_user=request.user) | Q(to_user=request.user))
-    history = history.order_by("-transaction_on").all()
-    paginator = Paginator(history, 10)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+        history = History.objects.filter(Q(from_user=request.user) | Q(to_user=request.user))
+        history = history.order_by("-transaction_on").all()
+        paginator = Paginator(history, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+    except:
+        page_obj=[]
     return render(request, 'history.html', {'history': page_obj})
 
 @login_required
@@ -615,26 +622,35 @@ def watchlist(request):
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
     except:
-        watchlists=[]
+        page_obj=[]
     
     return render(request, 'watchlist.html', {'watchlists': page_obj})
 
 
 def my_orders(request):
-    orders = Orders.objects.filter(lister=request.user)
-    orders = orders.order_by("-created").all()
-    paginator = Paginator(orders, 10)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    try:
+
+        orders = Orders.objects.filter(lister=request.user)
+        orders = orders.order_by("-created").all()
+        paginator = Paginator(orders, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+    except:
+        page_obj=[]
+
     return render(request, 'my_orders.html', {'orders': page_obj})
 
 
 def all_orders(request):
-    orders = Orders.objects.all().filter(is_fulfilled=False, is_closed=False)
-    orders = orders.order_by("-created").all()
-    paginator = Paginator(orders, 10)
-    page_number = request.GET.get("page")
-    page_obj = paginator.get_page(page_number)
+    try:
+
+        orders = Orders.objects.all().filter(is_fulfilled=False, is_closed=False)
+        orders = orders.order_by("-created").all()
+        paginator = Paginator(orders, 10)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+    except:
+        page_obj=[]
     return render(request, 'all_orders.html', {'orders': page_obj})
 
 
@@ -805,7 +821,7 @@ def order_deal(request, action):
         lister_wallet.save()
         doer_wallet.save()
         order.is_fulfilled = True
-        order.fulfilled_on = datetime.datetime.now()
+        order.closed_fullfilled_on = datetime.datetime.now()
         order.save()
         history = History(
             to_user=doer,
@@ -843,7 +859,7 @@ def order_deal(request, action):
         lister_wallet.save()
         doer_wallet.save()
         order.is_fulfilled = True
-        order.fulfilled_on = datetime.datetime.now()
+        order.closed_fullfilled_on = datetime.datetime.now()
         order.save()
         history = History(
             to_user=lister,
@@ -874,7 +890,7 @@ def order_deal(request, action):
                 lister_temp_wallet.delete()
                 
             order.is_closed=True
-            order.closed_on=datetime.datetime.now()
+            order.closed_fullfilled_on=datetime.datetime.now()
             order.save()
 
     return JsonResponse({'status':'true',"message": "Action Completed successfully."}, status=201)
@@ -914,10 +930,10 @@ def info(request,details):
 
             
 def price_history(request,**values):
-    import datetime
+    
     id=values['id']
     period=values['period']
-    print(id,period)
+    
     list_coin=List_Coin.objects.get(coin_id=id)
     
     url = f'https://api.coincap.io/v2/assets/{id}/history?interval={period}'
@@ -934,14 +950,3 @@ def price_history(request,**values):
     return JsonResponse({'priceUsd':priceUsd,'time':time,'name':list_coin.title,'period':period},safe=False)     
 
 
-
-def test(request):
-
-    
-
-
-    
-    
-
-    
-    return render(request, 'test.html')

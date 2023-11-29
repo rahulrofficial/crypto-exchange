@@ -49,9 +49,7 @@
             <li class="nav-item">
               <a class="nav-link" href="{%url 'markets'%}">Markets</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link bg-danger" href="{%url 'test'%}">Test</a>
-            </li>
+          
             {% if user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'deposit' %}">Deposit</a>
@@ -65,7 +63,7 @@
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'all_orders' %}">All Orders</a>
+              <a class="nav-link" href="{% url 'all_orders' %}">Active Orders</a>
             </li>
 
             <li class="nav-item">

@@ -85,6 +85,7 @@
     {%endfor%}
   </table>
 </div>
+{%if orders %}
 <nav >
   <ul class="pagination justify-content-center">
     {% if orders.has_previous %}
@@ -98,5 +99,6 @@
     {% endif %}
   </ul>
 </nav>
+{%endif%}
 
 {% endblock %}

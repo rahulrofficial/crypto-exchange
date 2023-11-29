@@ -51,7 +51,7 @@
 
 
    </div> 
-
+{%if history %}
    <nav >
     <ul class="pagination justify-content-center">
       {% if history.has_previous %}
@@ -65,7 +65,7 @@
       {% endif %}
     </ul>
   </nav>
-
+  {% endif %}
    
 
 {% endblock %}

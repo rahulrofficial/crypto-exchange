@@ -38,9 +38,9 @@
 
       <td style="padding-top: 14px; color: gray">{{order.created}}</td>
       <td>{%if order.is_fulfilled%}
-        <td style="padding-top: 14px; color: gray">Fulfilled on:{{order.fulfilled_on}}</td>
+        <td style="padding-top: 14px; color: gray">Fulfilled on:{{order.closed_fullfilled_on}}</td>
         {%elif order.is_closed%}
-        <td style="padding-top: 14px; color: gray">Closed on:{{order.closed_on}}</td>
+        <td style="padding-top: 14px; color: gray">Closed on:{{order.closed_fullfilled_on}}</td>
         {%else%}
         <button
           data-order_id="{{order.id}}"
@@ -57,6 +57,7 @@
     {%endfor%}
   </table>
 </div>
+{%if orders %}
 <nav >
   <ul class="pagination justify-content-center">
     {% if orders.has_previous %}
@@ -70,4 +71,5 @@
     {% endif %}
   </ul>
 </nav>
+{%endif%}
 {% endblock %}

@@ -50,7 +50,7 @@
 
 </div>
  
-
+{%if coins%}
 <nav >
     <ul class="pagination justify-content-center">
       {% if coins.has_previous %}
@@ -64,7 +64,7 @@
       {% endif %}
     </ul>
   </nav> 
-
+  {% endif %}
 
 
 
