@@ -111,4 +111,4 @@ To run the Crypto Currency Exchange locally, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/crypto-exchange.git
+   git clone https://github.com/rahulrofficial/crypto-exchange.git
