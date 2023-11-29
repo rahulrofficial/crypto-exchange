@@ -39,7 +39,7 @@ def database_listed_coins_updater():
         res = requests.get(url)
         response = json.loads(res.text)
         for item in response['data']:
-            print(item['id'])
+            
             coins = List_Coin(
                 coin_id=item['id'],
                 symbol=item['symbol'],
@@ -156,7 +156,7 @@ def view_coin(request, id):
     try:
         watchlists=Watchlist.objects.get(watcher=request.user)
         watchlisted= coin in watchlists.watch_list.all()
-        print(watchlisted)
+        
     except:
         watchlisted=False
    
@@ -269,7 +269,7 @@ def deposit(request):
                 coin = wallet.coins.filter(coin=listed_coin).first()
 
                 if not coin:
-                    print('integrity error')
+                    
                     raise IntegrityError
                 coin.current_coin_amount += amount
             except IntegrityError:
@@ -360,7 +360,7 @@ def buy_sell(request):
 
             if form.is_valid():
                 amount = form.cleaned_data['amount']
-                print(form.cleaned_data['coins'])
+                
                 coin_id = int(form.cleaned_data['coins'])
                 action = form.cleaned_data['action']
                 coin=List_Coin.objects.get(pk=coin_id)
@@ -384,7 +384,7 @@ def buy_sell(request):
                     exchange_coin = exchange_wallet.coins.filter(
                         coin=listed_coin).first()
                     if not exchange_coin:
-                        print('integrity error')
+                      
                         raise IntegrityError
                 except IntegrityError:
                     current_amount = exchange_per_reserve/current_coin_price
@@ -401,7 +401,7 @@ def buy_sell(request):
                 try:
                     user_coin = user_wallet.coins.filter(coin=listed_coin).first()
                     if not user_coin:
-                        print('integrity error-User side')
+                        
                         raise IntegrityError
                 except:
                     user_coin = Coin(coin=listed_coin)
@@ -412,7 +412,7 @@ def buy_sell(request):
                 try:
                     user_usd_coin = user_wallet.coins.filter(coin=usd_coin).first()
                     if not user_usd_coin:
-                        print('integrity error-User Usd side')
+                       
                         raise IntegrityError
                 except:
                     user_usd_coin = Coin(
@@ -426,7 +426,7 @@ def buy_sell(request):
                     exchange_usd_coin = exchange_wallet.coins.filter(
                         coin=usd_coin).first()
                     if not exchange_usd_coin:
-                        print('integrity error-exchange Usd side')
+                        
                         raise IntegrityError
                 except:
                     exchange_usd_coin = Coin(
@@ -662,7 +662,7 @@ def create_orders(request):
             amount = float(form.cleaned_data['amount'])
             price_per_coin = float(form.cleaned_data['price_per_coin'])
             action = form.cleaned_data['action']
-            print(id, amount, price_per_coin, action)
+            
             order_coin = List_Coin.objects.get(pk=id)
             if action == 'buy':
                 usd_coin = List_Coin.objects.get(coin_id='usd')
@@ -732,15 +732,14 @@ def order_deal(request, action):
     
     order = Orders.objects.get(pk=order_id)
     doer = request.user
-    print('Lister:',lister)
-    print('doer:',doer)
+    
 
     order_coin = order.order_coin
-    print(order_coin)
+    
     order_price_per_coin = order.order_price_per_coin
     order_amount = order.order_amount
     order_coin_no = order.order_coin_no
-    print(order_coin_no)
+ 
 
     lister_wallet = Wallet.objects.get(owner=lister)
     lister_temp_wallet = Order_wallet.objects.get(order=order)
@@ -877,7 +876,7 @@ def order_deal(request, action):
             return JsonResponse({'status':'false',"message": "Something went wrong."}, status=400)
     if action == 'close':
         if lister==doer:
-            print(lister_temp_wallet.temp_coin.coin_id)
+            
             if lister_temp_wallet.temp_coin.coin_id=='usd':
                 lister_usd_coin.current_coin_amount+=lister_temp_wallet.frozen_amount
                 lister_usd_coin.save()

@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			.then((response) => response.json())
 			.then((list_coin) => {
 				function value_fetcher(crypto_coin_name) {
-					console.log(typeof id_amount.value);
+					
 					current_price_span.innerHTML = "";
 
 					document.querySelector("#exp_amount").innerHTML = "";
@@ -311,7 +311,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			.then((response) => response.json())
 			.then((data) => {
 				var coins = data.wallet.crypto.join(",");
-				console.log(coins)
+				
 				function update_market_price() {
 					fetch(`https://api.coincap.io/v2/assets?ids=${coins}`)
 						.then((response) => response.json())
@@ -424,7 +424,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 		})
 		
 		function repeat_view_price() {
-			console.log(coin_id.innerHTML);
+			
 			fetch(`/coin_data/${coin_id.innerHTML}`)
 				.then((response) => response.json())
 				.then((coin) => {
@@ -464,7 +464,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 			.then((response) => response.json())
 			.then((data) => {
 				var coins = data.watchlist.join(",");
-				console.log(coins);
+				
 				function update_market_price() {
 					fetch(`https://api.coincap.io/v2/assets?ids=${coins}`)
 						.then((response) => response.json())
