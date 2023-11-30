@@ -129,11 +129,11 @@ The complexity of the project lies in its varied functionalities:
    - views.profile - Shows Profile Picture, Email, Joined date, First and Last name and Last Login. User can also edit these data as well as change their password.
    - views.view_coin - Live current prices, Supply, MarketCap, Price History Graph which has intervals of 1day, 12h, 6h, 2h, 1h, 30minutes, 15minutes, 5minutes and 1minute. The plotting of graph is done by Plotly.js and live fetching of data is done by exchange.js 
    - views.markets - Shows live prices of 100+ coins and gives an option to add them/remove them to the watchlist.
-   - views.deposit - Helps the user to deposit Fiat Money (USD for now) to their wallet so that they can purchase crypto.
+   - views.deposit - Helps the user to deposit Fiat Money (USD for now) to their wallet so that they can purchase crypto.If the user do not has an existing wallet,it will be automatically created. 
    - views.wallet -A Multi-Currency Wallet: Shows User's Current coins, their amount and their total value in USD
-   - views.buy_sell - User can Purchase or Sell their crypto with the exchange at the current market rate.The exchange.js enables live price display of required amount in USD if the user want to purchase a specific crypto or expected money in USD if they wished to sell.
+   - views.buy_sell - User can Purchase or Sell their crypto with the exchange at the current market rate.The exchange.js enables live price display of required amount in USD if the user want to purchase a specific crypto or expected money in USD if they wished to sell.If the user do not has an existing wallet when they buy a specific coin,that coin wallet is created and If the user do not has a USD wallet when they try to sell some crypto in exchange for USD,the USD wallet automatically created.
    - views.history - Shows the Users Purchase, Sale, Transfer and Reception of Funds/Coins
-   - views.transfer - User can transfer the crypto in their wallet to other users.
+   - views.transfer - User can transfer the crypto in their wallet to other users.If the receiver do not has the sent coin wallet (eg.if bitcoin was sent and receiver do not has a bitcoin wallet).It is automatically created.
    - views.watchlist - Displays user added coins and their current live prices.
    - views.add_watchlist - Add a specific coin to Watchlist.
    - views.remove_watchlist - Remove a specific coin from Watchlist.
@@ -168,7 +168,7 @@ The Crypto Hub - The Crypto Currency Exchange uses the following libraries:
 
 - `Django`: For backend.
 - `Javascript`: For Handling client-side interactions and live price updating.
-- `Bootstrap.js`: For User Interfaces.
+- `Bootstrap.css and bootstrap.js`: For User Dynamic Interfaces.
 - `Plotly.js`: For rendering Price Line Graph.
 - `requests`: For interacting with CoinCap API.
 - `CoinCap Api` : For live coin prices and Price History <https://docs.coincap.io/>
@@ -183,6 +183,7 @@ To run the Crypto Currency Exchange locally, follow these steps:
    ```
 2. Navigate to the project directory:
    ```bash
+   cd crypto-exchange
    cd Crypto
    ```
 3. Run Django Server :
