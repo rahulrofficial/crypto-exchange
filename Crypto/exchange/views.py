@@ -149,18 +149,19 @@ def index(request):
 def view_coin(request, id):
     try:
         coin=List_Coin.objects.get(coin_id=id)
-        coin=coin.serialize()
+        coin_data=coin.serialize()
     except:
-        coin=[]
+        coin_data=[]
     
     try:
         watchlists=Watchlist.objects.get(watcher=request.user)
         watchlisted= coin in watchlists.watch_list.all()
         
+        
     except:
         watchlisted=False
-   
-    return render(request, 'view_coin.html', {'coin': coin,'watchlisted':watchlisted})
+    
+    return render(request, 'view_coin.html', {'coin': coin_data,'watchlisted':watchlisted})
 
 
 def coin_data(request, id):
@@ -418,7 +419,7 @@ def buy_sell(request):
                     user_usd_coin = Coin(
                         coin=usd_coin)
                     user_usd_coin.save()
-                    user_wallet.coins.add(exchange_usd_coin)
+                    user_wallet.coins.add(user_usd_coin)
                     user_wallet.save()
                     
 

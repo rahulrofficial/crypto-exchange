@@ -11,7 +11,7 @@ class List_Coin(models.Model):
     symbol=models.CharField(max_length=16,unique=True)
     title=models.CharField(max_length=64,unique=True)
     logo_url=models.URLField(blank=True)
-    #explorer=models.URLField(blank=True)
+    
 
     def __str__(self):
         return f"{self.title} ({self.symbol})"
@@ -52,9 +52,9 @@ class Wallet(models.Model):
         }
 
 class Watchlist(models.Model):
-    #user -foreign key
+    
     watcher=models.ForeignKey(User,on_delete=models.CASCADE,related_name="watching")
-    #items
+    
     watch_list=models.ManyToManyField(List_Coin,blank=True,related_name="watchers")
 
 class History(models.Model):
